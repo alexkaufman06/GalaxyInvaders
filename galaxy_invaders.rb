@@ -1,5 +1,6 @@
 require 'gosu'
 require_relative 'player'
+require_relative 'enemy'
 
 class GalaxyInvaders < Gosu::Window
 	WIDTH = 800
@@ -9,10 +10,12 @@ class GalaxyInvaders < Gosu::Window
 		super(WIDTH, HEIGHT)
 		self.caption = 'Galaxy Invaders'
 		@player = Player.new(self)
+		@enemy = Enemy.new(self)
 	end
 
 	def draw
 		@player.draw
+		@enemy.draw
 	end
 
 	def update
@@ -20,6 +23,7 @@ class GalaxyInvaders < Gosu::Window
 		@player.turn_right if button_down?(Gosu::KbRight)
 		@player.accelerate if button_down?(Gosu::KbUp)
 		@player.move
+		@enemy.move
 	end
 end
 
