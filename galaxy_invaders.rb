@@ -2,8 +2,11 @@ require 'gosu'
 require_relative 'player'
 
 class GalaxyInvaders < Gosu::Window
+	WIDTH = 800
+	HEIGHT = 600
+
 	def initialize
-		super(800,600)
+		super(WIDTH, HEIGHT)
 		self.caption = 'Galaxy Invaders'
 		@player = Player.new(self)
 	end
