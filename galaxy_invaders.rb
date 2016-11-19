@@ -1,6 +1,7 @@
 require 'gosu'
 require_relative 'player'
 require_relative 'enemy'
+require_relative 'bullet'
 
 class GalaxyInvaders < Gosu::Window
 	WIDTH = 800
@@ -12,12 +13,22 @@ class GalaxyInvaders < Gosu::Window
 		self.caption = 'Galaxy Invaders'
 		@player = Player.new(self)
 		@enemies = []
+		@bullets = []
 	end
 
 	def draw
 		@player.draw
 		@enemies.each do |enemy|
 			enemy.draw
+		end
+		@bullets.each do |bullet|
+			bullet.draw
+		end
+	end
+
+	def button_down(id)
+		if id == Gosu::KbSpace
+			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 		end
 	end
 
@@ -33,6 +44,10 @@ class GalaxyInvaders < Gosu::Window
 
 		@enemies.each do |enemy|
 			enemy.move
+		end
+
+		@bullets.each do |bullet|
+			bullet.move
 		end
 	end
 end
