@@ -2,6 +2,7 @@ require 'gosu'
 require_relative 'player'
 require_relative 'enemy'
 require_relative 'bullet'
+require_relative 'explosion'
 
 class GalaxyInvaders < Gosu::Window
 	WIDTH = 800
@@ -9,20 +10,24 @@ class GalaxyInvaders < Gosu::Window
 	ENEMY_FREQUENCY = 0.05
 
 	def initialize
-		super(WIDTH, HEIGHT)
+		super(WIDTH, HEIGHT) 
 		self.caption = 'Galaxy Invaders'
 		@player = Player.new(self)
 		@enemies = []
 		@bullets = []
+		@explosions = [] 
 	end
 
 	def draw
 		@player.draw
 		@enemies.each do |enemy|
 			enemy.draw
-		end
+		end  
 		@bullets.each do |bullet|
 			bullet.draw
+		end
+		@explosions.each do |explosion|
+			explosion.draw
 		end
 	end
 
@@ -56,6 +61,7 @@ class GalaxyInvaders < Gosu::Window
 				if distance < enemy.radius + bullet.radius
 					@enemies.delete enemy
 					@bullets.delete bullet
+					@explosions.push Explosion.new(self, enemy.x, enemy.y)
 				end 
 			end
 		end
