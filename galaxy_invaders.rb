@@ -41,6 +41,7 @@ class GalaxyInvaders < Gosu::Window
 		@player.turn_left if button_down?(Gosu::KbLeft)
 		@player.turn_right if button_down?(Gosu::KbRight)
 		@player.accelerate if button_down?(Gosu::KbUp)
+		@player.reverse if button_down?(Gosu::KbDown)
 		@player.move
 
 		if rand < ENEMY_FREQUENCY

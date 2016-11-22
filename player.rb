@@ -32,6 +32,11 @@ class Player
 		@velocity_y += Gosu.offset_y(@angle, ACCELERATION)
 	end
 
+	def reverse
+		@velocity_x -= Gosu.offset_x(@angle, ACCELERATION)
+		@velocity_y -= Gosu.offset_y(@angle, ACCELERATION)
+	end
+
 	def move
 		@x += @velocity_x
 		@y += @velocity_y
