@@ -1,5 +1,5 @@
 class Bullet
-	SPEED = 10
+	SPEED = 15
 	attr_reader :x, :y, :radius
 
 	def initialize(window, x, y, angle)

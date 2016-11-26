@@ -1,0 +1,11 @@
+Galaxy Invaders
+By: Alex Kaufman
+
+Based on a tutorial from
+Learn Game Programmin with Ruby
+by Mark Sobkowicz
+
+---Images---
+
+Game art from OpenGameArt.org
+Licensed under Creative Commons: Public Domain CC0
