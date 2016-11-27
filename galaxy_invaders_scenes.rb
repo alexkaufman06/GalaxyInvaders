@@ -17,7 +17,6 @@ class GalaxyInvaders < Gosu::Window
 		@background_image = Gosu::Image.new('images/start_screen.png')
 		@scene = :start
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
-		@start_music.play(true)
 	end
 
 	def initialize_game
@@ -29,6 +28,9 @@ class GalaxyInvaders < Gosu::Window
 		@enemies_appeared = 0
 		@enemies_destroyed = 0
 		@game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
+		@start_music.play(true)
+		@explosion_sound = Gosu::Sample.new('sounds/explosion.ogg')
+		@shooting_sound = Gosu::Sample.new('sounds/shoot.ogg')
 	end
 
 	def draw
@@ -98,6 +100,7 @@ class GalaxyInvaders < Gosu::Window
 					@bullets.delete bullet
 					@explosions.push Explosion.new(self, enemy.x, enemy.y)
 					@enemies_destroyed += 1
+					@explosion_sound.play
 				end 
 			end
 		end
@@ -141,6 +144,7 @@ class GalaxyInvaders < Gosu::Window
 
 	def button_down_game(id)
 		@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle) if button_down?(Gosu::KbSpace)
+		@shooting_sound.play(0.3)
 	end
 
 	def initialize_end(fate)
