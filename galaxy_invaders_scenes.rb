@@ -120,9 +120,16 @@ class GalaxyInvaders < Gosu::Window
 		end
 
 		initialize_end(:count_reached) if @enemies_appeared > MAX_ENEMIES
+
+		initialize_end(:hit_by_enemy) if @player.exploded
+
 		@enemies.each do |enemy|
 			distance = Gosu.distance(enemy.x, enemy.y, @player.x, @player.y)
-			initialize_end(:hit_by_enemy) if distance < @player.radius + enemy.radius
+			if distance < @player.radius + enemy.radius
+				@explosions.push Explosion.new(self, @player.x, @player.y)
+				@explosion_sound.play
+				@player.explode
+			end
 		end
 		initialize_end(:off_top) if @player.y < @player.radius
 	end
@@ -143,8 +150,10 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def button_down_game(id)
-		@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle) if button_down?(Gosu::KbSpace)
-		@shooting_sound.play(0.3)
+		if button_down?(Gosu::KbSpace)
+			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
+			@shooting_sound.play(0.3)
+		end
 	end
 
 	def initialize_end(fate)

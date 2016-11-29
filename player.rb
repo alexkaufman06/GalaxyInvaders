@@ -2,7 +2,7 @@ class Player
 	ROTATION_SPEED = 3
 	ACCELERATION = 0.6
 	FRICTION = 0.92
-	attr_reader :x, :y, :angle, :radius
+	attr_reader :x, :y, :angle, :radius, :exploded
 
 	def initialize(window)
 		@x = 200
@@ -11,6 +11,7 @@ class Player
 		@image = Gosu::Image.new('images/ship.png')
 		@velocity_x = 0
 		@velocity_y = 0
+		@exploded = false
 		@radius = 20
 		@window = window
 	end
@@ -57,5 +58,9 @@ class Player
 			@velocity_y = 0
 			@y = @window.height - @radius
 		end
+	end
+
+	def explode
+		@exploded = true
 	end
 end
