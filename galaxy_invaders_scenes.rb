@@ -26,11 +26,13 @@ class GalaxyInvaders < Gosu::Window
 		@explosions = []
 		@scene = :game
 		@enemies_appeared = 0
+		@enemy_intruders = 0
 		@enemies_destroyed = 0
 		@game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
 		@start_music.play(true)
 		@explosion_sound = Gosu::Sample.new('sounds/explosion.ogg')
 		@shooting_sound = Gosu::Sample.new('sounds/shoot.ogg')
+		@intruder_sound = Gosu::Sample.new('sounds/intruder-alert.wav')
 	end
 
 	def draw
@@ -112,6 +114,8 @@ class GalaxyInvaders < Gosu::Window
 		@enemies.dup.each do|enemy|
 			if enemy.y > HEIGHT + enemy.radius
 				@enemies.delete enemy
+				@enemy_intruders += 1;
+				@intruder_sound.play
 			end
 		end
 
@@ -160,7 +164,7 @@ class GalaxyInvaders < Gosu::Window
 		case fate
 		when :count_reached
 			@message = "You made it! You destroyed #{@enemies_destroyed} ships"
-			@message2 = "and #{100 - @enemies_destroyed} reached the base."
+			@message2 = "and #{@enemy_intruders} reached the base."
 		when :hit_by_enemy
 			@message = "You were struck by an enemy ship."
 			@message2 = "Before your ship was destroyed, "
