@@ -24,6 +24,7 @@ class GalaxyInvaders < Gosu::Window
 		@enemies = []
 		@bullets = []
 		@explosions = []
+		@color = Gosu::Color::NONE
 		@scene = :game
 		@enemies_appeared = 0
 		@enemy_intruders = 0
@@ -51,6 +52,7 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def draw_game
+		draw_quad(0, 0, @color, 800, 0, @color, 800, 600, @color, 0, 600, @color)
 		@player.draw
 		@enemies.each do |enemy|
 			enemy.draw
@@ -80,6 +82,7 @@ class GalaxyInvaders < Gosu::Window
 		# Machine Gun logic below
 		# @bullets.push Bullet.new(self, @player.x, @player.y, @player.angle) if button_down?(Gosu::KbSpace)
 		@player.move
+		@color = Gosu::Color::NONE
 
 		if rand < ENEMY_FREQUENCY
 			@enemies.push Enemy.new(self)
@@ -115,6 +118,7 @@ class GalaxyInvaders < Gosu::Window
 			if enemy.y > HEIGHT + enemy.radius
 				@enemies.delete enemy
 				@enemy_intruders += 1;
+				@color = Gosu::Color::RED
 				@intruder_sound.play
 			end
 		end
@@ -135,6 +139,7 @@ class GalaxyInvaders < Gosu::Window
 				@player.explode
 			end
 		end
+		
 		initialize_end(:off_top) if @player.y < @player.radius
 	end
 
