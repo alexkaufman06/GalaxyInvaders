@@ -8,8 +8,8 @@ require_relative 'credit'
 class GalaxyInvaders < Gosu::Window
 	WIDTH = 800
 	HEIGHT = 600
-	ENEMY_FREQUENCY = 0.05
-	MAX_ENEMIES = 100
+	ENEMY_FREQUENCY = 0.01
+	MAX_ENEMIES = 50
 
 	def initialize
 		super(WIDTH, HEIGHT) 
@@ -17,6 +17,7 @@ class GalaxyInvaders < Gosu::Window
 		@background_image = Gosu::Image.new('images/start_screen.png')
 		@scene = :start
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
+		@font = Gosu::Font.new(20)
 	end
 
 	def initialize_game
@@ -25,6 +26,7 @@ class GalaxyInvaders < Gosu::Window
 		@bullets = []
 		@explosions = []
 		@color = Gosu::Color::NONE
+		@health = Gosu::Color::GREEN
 		@scene = :game
 		@enemies_appeared = 0
 		@enemy_intruders = 0
@@ -63,6 +65,12 @@ class GalaxyInvaders < Gosu::Window
 		@explosions.each do |explosion|
 			explosion.draw
 		end
+		@font.draw("HP", 5, 20, 2)
+		draw_quad(35, 20, @health, 135 - (@enemy_intruders * 10), 20, @health, 135 - (@enemy_intruders * 10), 40, @health, 35, 40, @health)
+		draw_line(35,20,Gosu::Color::WHITE,135,20,Gosu::Color::WHITE)
+		draw_line(135,20,Gosu::Color::WHITE,135,40,Gosu::Color::WHITE)
+		draw_line(135,40,Gosu::Color::WHITE,35,40,Gosu::Color::WHITE)
+		draw_line(35,40,Gosu::Color::WHITE,35,20,Gosu::Color::WHITE)
 	end
 
 	def update
@@ -131,6 +139,8 @@ class GalaxyInvaders < Gosu::Window
 
 		initialize_end(:hit_by_enemy) if @player.exploded
 
+		initialize_end(:too_many_intruders) if @enemy_intruders > 9
+
 		@enemies.each do |enemy|
 			distance = Gosu.distance(enemy.x, enemy.y, @player.x, @player.y)
 			if distance < @player.radius + enemy.radius
@@ -174,6 +184,10 @@ class GalaxyInvaders < Gosu::Window
 			@message = "You were struck by an enemy ship."
 			@message2 = "Before your ship was destroyed, "
 			@message2 += "you took out #{@enemies_destroyed} enemy ships."
+		when :too_many_intruders
+			@message = "You let too many intruders invade our galaxy."
+			@message2 = "Before the galaxy was invaded, "
+			@message2 += "you destroyed #{@enemies_destroyed} enemy ships."
 		when :off_top
 			@message = "You got too close to the enemy mother ship."
 			@message2 = "Before your ship was destroyed, "
