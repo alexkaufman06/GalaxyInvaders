@@ -92,7 +92,7 @@ class GalaxyInvaders < Gosu::Window
 		@player.move
 		@color = Gosu::Color::NONE
 
-		if rand < ENEMY_FREQUENCY
+		if rand < ENEMY_FREQUENCY && MAX_ENEMIES > (@enemies_destroyed + @enemy_intruders)
 			@enemies.push Enemy.new(self)
 			@enemies_appeared += 1
 		end
@@ -135,7 +135,15 @@ class GalaxyInvaders < Gosu::Window
 			@bullets.delete bullet unless bullet.onscreen?
 		end
 
-		initialize_end(:count_reached) if @enemies_appeared > MAX_ENEMIES
+		if @enemy_intruders > 6
+			@health = Gosu::Color::RED
+		elsif @enemy_intruders > 4
+			@health = Gosu::Color::YELLOW
+		else
+			@health = Gosu::Color::GREEN
+		end	
+
+		initialize_end(:count_reached) if (@enemy_intruders + @enemies_destroyed) == MAX_ENEMIES
 
 		initialize_end(:hit_by_enemy) if @player.exploded
 
