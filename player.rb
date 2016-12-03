@@ -2,7 +2,7 @@ class Player
 	ROTATION_SPEED = 3
 	ACCELERATION = 0.6
 	FRICTION = 0.92
-	attr_reader :x, :y, :angle, :radius, :exploded
+	attr_reader :x, :y, :angle, :radius, :exploded, :machine_gun
 
 	def initialize(window)
 		@x = 200
@@ -12,6 +12,7 @@ class Player
 		@velocity_x = 0
 		@velocity_y = 0
 		@exploded = false
+		@machine_gun = false
 		@radius = 20
 		@window = window
 	end
@@ -36,6 +37,14 @@ class Player
 	def reverse
 		@velocity_x -= Gosu.offset_x(@angle, ACCELERATION)
 		@velocity_y -= Gosu.offset_y(@angle, ACCELERATION)
+	end
+
+	def use_machine_gun
+		if @machine_gun == false
+			@machine_gun = true
+		else
+			@machine_gun = false
+		end
 	end
 
 	def move

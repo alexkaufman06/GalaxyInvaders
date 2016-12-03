@@ -36,6 +36,7 @@ class GalaxyInvaders < Gosu::Window
 		@explosion_sound = Gosu::Sample.new('sounds/explosion.ogg')
 		@shooting_sound = Gosu::Sample.new('sounds/shoot.ogg')
 		@intruder_sound = Gosu::Sample.new('sounds/intruder-alert.wav')
+		@machine_gun_sound = Gosu::Sample.new('sounds/machine-gun.wav')
 	end
 
 	def draw
@@ -87,8 +88,15 @@ class GalaxyInvaders < Gosu::Window
 		@player.turn_right if button_down?(Gosu::KbRight)
 		@player.accelerate if button_down?(Gosu::KbUp)
 		@player.reverse if button_down?(Gosu::KbDown)
-		# Machine Gun logic below
-		# @bullets.push Bullet.new(self, @player.x, @player.y, @player.angle) if button_down?(Gosu::KbSpace)
+
+		if @player.machine_gun == true
+			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle) if button_down?(Gosu::KbSpace)
+		end
+
+		if button_down?(Gosu::KbM)
+			@player.use_machine_gun
+		end
+
 		@player.move
 		@color = Gosu::Color::NONE
 
@@ -143,7 +151,7 @@ class GalaxyInvaders < Gosu::Window
 			@health = Gosu::Color::GREEN
 		end	
 
-		initialize_end(:count_reached) if (@enemy_intruders + @enemies_destroyed) == MAX_ENEMIES
+		initialize_end(:count_reached) if (@enemy_intruders + @enemies_destroyed) >= MAX_ENEMIES
 
 		initialize_end(:hit_by_enemy) if @player.exploded
 
@@ -177,9 +185,12 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def button_down_game(id)
-		if button_down?(Gosu::KbSpace)
+		if button_down?(Gosu::KbSpace) && @player.machine_gun == true
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
-			@shooting_sound.play(0.3)
+			@machine_gun_sound.play(0.02)
+		elsif button_down?(Gosu::KbSpace) 
+			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
+			@shooting_sound.play(0.1)
 		end
 	end
 
