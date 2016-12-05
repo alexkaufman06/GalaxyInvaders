@@ -36,7 +36,6 @@ class GalaxyInvaders < Gosu::Window
 		@explosion_sound = Gosu::Sample.new('sounds/explosion.ogg')
 		@shooting_sound = Gosu::Sample.new('sounds/shoot.ogg')
 		@intruder_sound = Gosu::Sample.new('sounds/intruder-alert.wav')
-		@machine_gun_sound = Gosu::Sample.new('sounds/machine-gun.wav')
 	end
 
 	def draw
@@ -91,6 +90,7 @@ class GalaxyInvaders < Gosu::Window
 
 		if @player.machine_gun == true
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle) if button_down?(Gosu::KbSpace)
+			@shooting_sound.play(0.2) if button_down?(Gosu::KbSpace)
 		end
 
 		if button_down?(Gosu::KbM)
@@ -175,6 +175,7 @@ class GalaxyInvaders < Gosu::Window
 			button_down_start(id)
 		when :game
 			button_down_game(id)
+			button_up_game(id)
 		when :end
 			button_down_end(id)
 		end
@@ -187,10 +188,15 @@ class GalaxyInvaders < Gosu::Window
 	def button_down_game(id)
 		if button_down?(Gosu::KbSpace) && @player.machine_gun == true
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
-			@machine_gun_sound.play(0.02)
 		elsif button_down?(Gosu::KbSpace) 
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
-			@shooting_sound.play(0.1)
+			@shooting_sound.play(0.3)
+		end
+	end
+
+	def button_up_game(id)
+		if button_down?(Gosu::KbSpace) === false
+			
 		end
 	end
 
