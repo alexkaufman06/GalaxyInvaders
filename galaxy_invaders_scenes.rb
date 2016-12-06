@@ -9,7 +9,8 @@ class GalaxyInvaders < Gosu::Window
 	WIDTH = 800
 	HEIGHT = 600
 	ENEMY_FREQUENCY = 0.01
-	MAX_ENEMIES = 50
+	MAX_ENEMIES = 25
+	START_TIME = Time.now
 
 	def initialize
 		super(WIDTH, HEIGHT) 
@@ -31,6 +32,8 @@ class GalaxyInvaders < Gosu::Window
 		@enemies_appeared = 0
 		@enemy_intruders = 0
 		@enemies_destroyed = 0
+		@seconds_played = 0
+		@bullet_fired = Time.now
 		@game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
 		@start_music.play(true)
 		@explosion_sound = Gosu::Sample.new('sounds/explosion.ogg')
@@ -66,6 +69,14 @@ class GalaxyInvaders < Gosu::Window
 			explosion.draw
 		end
 		@font.draw("HP", 5, 20, 2)
+		@font.draw("Dest: #{@enemies_destroyed}", 5, 45, 2)
+		@font.draw("App: #{@enemies_appeared}", 5, 70, 2)
+		@font.draw("#{@seconds_played}",5, 95, 2)
+		
+		if @player.machine_gun == true
+			@font.draw("MG", 5, 120, 2)
+		end
+
 		draw_quad(35, 20, @health, 135 - (@enemy_intruders * 10), 20, @health, 135 - (@enemy_intruders * 10), 40, @health, 35, 40, @health)
 		draw_line(35,20,Gosu::Color::WHITE,135,20,Gosu::Color::WHITE)
 		draw_line(135,20,Gosu::Color::WHITE,135,40,Gosu::Color::WHITE)
@@ -88,19 +99,16 @@ class GalaxyInvaders < Gosu::Window
 		@player.accelerate if button_down?(Gosu::KbUp)
 		@player.reverse if button_down?(Gosu::KbDown)
 
-		if @player.machine_gun == true
-			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle) if button_down?(Gosu::KbSpace)
-			@shooting_sound.play(0.2) if button_down?(Gosu::KbSpace)
-		end
-
 		if button_down?(Gosu::KbM)
 			@player.use_machine_gun
 		end
 
+		@seconds_played = (Time.now - START_TIME).to_i
+
 		@player.move
 		@color = Gosu::Color::NONE
 
-		if rand < ENEMY_FREQUENCY && MAX_ENEMIES > (@enemies_destroyed + @enemy_intruders)
+		if rand < ENEMY_FREQUENCY && MAX_ENEMIES > @enemies_appeared
 			@enemies.push Enemy.new(self)
 			@enemies_appeared += 1
 		end
@@ -111,8 +119,8 @@ class GalaxyInvaders < Gosu::Window
 
 		@bullets.each do |bullet|
 			bullet.move
-		end
-
+		end 
+  
 		@enemies.dup.each do |enemy|
 			@bullets.dup.each do |bullet|
 				distance = Gosu.distance(enemy.x, enemy.y, bullet.x, bullet.y)
@@ -151,7 +159,7 @@ class GalaxyInvaders < Gosu::Window
 			@health = Gosu::Color::GREEN
 		end	
 
-		initialize_end(:count_reached) if (@enemy_intruders + @enemies_destroyed) >= MAX_ENEMIES
+		initialize_end(:count_reached) if @enemy_intruders + @enemies_destroyed >= MAX_ENEMIES
 
 		initialize_end(:hit_by_enemy) if @player.exploded
 
@@ -165,6 +173,12 @@ class GalaxyInvaders < Gosu::Window
 				@player.explode
 			end
 		end
+
+		if @player.machine_gun == true && button_down?(Gosu::KbSpace) && (Time.now - @bullet_fired) >= 0.04
+			@bullet_fired = Time.now  
+			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
+			@shooting_sound.play(0.3)
+		end
 		
 		initialize_end(:off_top) if @player.y < @player.radius
 	end
@@ -175,7 +189,6 @@ class GalaxyInvaders < Gosu::Window
 			button_down_start(id)
 		when :game
 			button_down_game(id)
-			button_up_game(id)
 		when :end
 			button_down_end(id)
 		end
@@ -186,17 +199,9 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def button_down_game(id)
-		if button_down?(Gosu::KbSpace) && @player.machine_gun == true
-			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
-		elsif button_down?(Gosu::KbSpace) 
+		if button_down?(Gosu::KbSpace) && @player.machine_gun != true
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 			@shooting_sound.play(0.3)
-		end
-	end
-
-	def button_up_game(id)
-		if button_down?(Gosu::KbSpace) === false
-			
 		end
 	end
 
