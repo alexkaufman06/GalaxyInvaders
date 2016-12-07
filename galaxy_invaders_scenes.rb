@@ -9,7 +9,7 @@ class GalaxyInvaders < Gosu::Window
 	WIDTH = 800
 	HEIGHT = 600
 	ENEMY_FREQUENCY = 0.01
-	MAX_ENEMIES = 25
+	# MAX_ENEMIES = 1
 	START_TIME = Time.now
 
 	def initialize
@@ -18,7 +18,10 @@ class GalaxyInvaders < Gosu::Window
 		@background_image = Gosu::Image.new('images/start_screen.png')
 		@scene = :start
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
+		@level = 1
+		@max_enemies = 10
 		@font = Gosu::Font.new(20)
+		@large_font = Gosu::Font.new(60)
 	end
 
 	def initialize_game
@@ -47,6 +50,8 @@ class GalaxyInvaders < Gosu::Window
 			draw_start
 		when :game
 			draw_game
+		when :level_up
+			draw_level_up
 		when :end
 			draw_end
 		end
@@ -108,7 +113,7 @@ class GalaxyInvaders < Gosu::Window
 		@player.move
 		@color = Gosu::Color::NONE
 
-		if rand < ENEMY_FREQUENCY && MAX_ENEMIES > @enemies_appeared
+		if rand < ENEMY_FREQUENCY && @max_enemies > @enemies_appeared
 			@enemies.push Enemy.new(self)
 			@enemies_appeared += 1
 		end
@@ -159,7 +164,8 @@ class GalaxyInvaders < Gosu::Window
 			@health = Gosu::Color::GREEN
 		end	
 
-		initialize_end(:count_reached) if @enemy_intruders + @enemies_destroyed >= MAX_ENEMIES
+		# initialize_end(:count_reached) if @enemy_intruders + @enemies_destroyed >= MAX_ENEMIES
+		@scene = :level_up if @enemy_intruders + @enemies_destroyed >= @max_enemies
 
 		initialize_end(:hit_by_enemy) if @player.exploded
 
@@ -189,6 +195,8 @@ class GalaxyInvaders < Gosu::Window
 			button_down_start(id)
 		when :game
 			button_down_game(id)
+		when :level_up
+			button_down_level_up(id)
 		when :end
 			button_down_end(id)
 		end
@@ -198,11 +206,26 @@ class GalaxyInvaders < Gosu::Window
 		initialize_game
 	end
 
+	def button_down_level_up(id)
+		if id == Gosu::KbP
+			@level += 1
+			@max_enemies += 10
+			initialize_game
+		end	
+	end
+
 	def button_down_game(id)
 		if button_down?(Gosu::KbSpace) && @player.machine_gun != true
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 			@shooting_sound.play(0.3)
 		end
+	end
+
+	def draw_level_up
+		@large_font.draw("You completed level " + @level.to_s, 120, 45, 2)
+		@font.draw("You destroyed " + @enemies_destroyed.to_s + " enemy ships", 250, 110, 2)
+		@font.draw(@enemy_intruders.to_s + " enemies invaded your galaxy", 250, 135, 2)
+		@font.draw("Press P to continue playing", 275, 350, 2)
 	end
 
 	def initialize_end(fate)
