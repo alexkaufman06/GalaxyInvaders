@@ -8,18 +8,17 @@ require_relative 'credit'
 class GalaxyInvaders < Gosu::Window
 	WIDTH = 800
 	HEIGHT = 600
-	ENEMY_FREQUENCY = 0.01
-	# MAX_ENEMIES = 1
 	START_TIME = Time.now
 
 	def initialize
 		super(WIDTH, HEIGHT) 
 		self.caption = 'Galaxy Invaders'
-		@background_image = Gosu::Image.new('images/start_screen.png')
+		@background_image = Gosu::Image.new('images/start.png')
 		@scene = :start
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
 		@level = 1
 		@max_enemies = 10
+		@enemy_frequency = 0.01
 		@font = Gosu::Font.new(20)
 		@large_font = Gosu::Font.new(60)
 	end
@@ -74,12 +73,12 @@ class GalaxyInvaders < Gosu::Window
 			explosion.draw
 		end
 		@font.draw("HP", 5, 20, 2)
-		@font.draw("Dest: #{@enemies_destroyed}", 5, 45, 2)
-		@font.draw("App: #{@enemies_appeared}", 5, 70, 2)
-		@font.draw("#{@seconds_played}",5, 95, 2)
+		# @font.draw("Dest: #{@enemies_destroyed}", 5, 120, 2)
+		# @font.draw("App: #{@enemies_appeared}", 5, 70, 2)
+		# @font.draw("#{@seconds_played}",5, 95, 2)
 		
 		if @player.machine_gun == true
-			@font.draw("MG", 5, 120, 2)
+			@font.draw("MG", 5, 45, 2)
 		end
 
 		draw_quad(35, 20, @health, 135 - (@enemy_intruders * 10), 20, @health, 135 - (@enemy_intruders * 10), 40, @health, 35, 40, @health)
@@ -113,8 +112,9 @@ class GalaxyInvaders < Gosu::Window
 		@player.move
 		@color = Gosu::Color::NONE
 
-		if rand < ENEMY_FREQUENCY && @max_enemies > @enemies_appeared
-			@enemies.push Enemy.new(self)
+		if rand < @enemy_frequency && @max_enemies > @enemies_appeared
+			@enemies.push Enemy.new(self, @level)
+
 			@enemies_appeared += 1
 		end
 
@@ -210,6 +210,7 @@ class GalaxyInvaders < Gosu::Window
 		if id == Gosu::KbP
 			@level += 1
 			@max_enemies += 10
+			@enemy_frequency += 0.0025
 			initialize_game
 		end	
 	end
@@ -225,7 +226,7 @@ class GalaxyInvaders < Gosu::Window
 		@large_font.draw("You completed level " + @level.to_s, 120, 45, 2)
 		@font.draw("You destroyed " + @enemies_destroyed.to_s + " enemy ships", 250, 110, 2)
 		@font.draw(@enemy_intruders.to_s + " enemies invaded your galaxy", 250, 135, 2)
-		@font.draw("Press P to continue playing", 275, 350, 2)
+		@font.draw("Press P to continue playing", 275, 350, 1,1,1, Gosu::Color::GREEN)
 	end
 
 	def initialize_end(fate)
@@ -286,6 +287,7 @@ class GalaxyInvaders < Gosu::Window
 
 	def button_down_end(id)
 		if id == Gosu::KbP
+			initialize
 			initialize_game
 		elsif id == Gosu::KbQ
 			close
