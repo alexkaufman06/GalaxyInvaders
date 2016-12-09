@@ -11,7 +11,7 @@ class GalaxyInvaders < Gosu::Window
 	START_TIME = Time.now
 
 	def initialize
-		super(WIDTH, HEIGHT) 
+		super(WIDTH, HEIGHT)
 		self.caption = 'Galaxy Invaders'
 		@background_image = Gosu::Image.new('images/start.png')
 		@scene = :start
@@ -31,6 +31,7 @@ class GalaxyInvaders < Gosu::Window
 		@color = Gosu::Color::NONE
 		@health = Gosu::Color::GREEN
 		@scene = :game
+		@pressed = false
 		@enemies_appeared = 0
 		@enemy_intruders = 0
 		@enemies_destroyed = 0
@@ -103,9 +104,9 @@ class GalaxyInvaders < Gosu::Window
 		@player.accelerate if button_down?(Gosu::KbUp)
 		@player.reverse if button_down?(Gosu::KbDown)
 
-		if button_down?(Gosu::KbM)
-			@player.use_machine_gun
-		end
+		# if button_down?(Gosu::KbM)
+		# 	@player.use_machine_gun
+		# end
 
 		@seconds_played = (Time.now - START_TIME).to_i
 
@@ -216,9 +217,14 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def button_down_game(id)
-		if button_down?(Gosu::KbSpace) && @player.machine_gun != true
+		if id == Gosu::KbM && !@pressed
+			@player.use_machine_gun
+			@pressed = true
+		elsif button_down?(Gosu::KbSpace) && @player.machine_gun != true
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
-			@shooting_sound.play(0.3)
+			@shooting_sound.play(0.3)	
+		elsif not id == Gosu::KbM
+			@pressed = false
 		end
 	end
 
