@@ -18,6 +18,7 @@ class GalaxyInvaders < Gosu::Window
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
 		@level = 1
 		@max_enemies = 10
+		@total_enemies_destroyed = 0
 		@enemy_frequency = 0.01
 		@font = Gosu::Font.new(20)
 		@large_font = Gosu::Font.new(60)
@@ -77,6 +78,7 @@ class GalaxyInvaders < Gosu::Window
 		# @font.draw("Dest: #{@enemies_destroyed}", 5, 120, 2)
 		# @font.draw("App: #{@enemies_appeared}", 5, 70, 2)
 		# @font.draw("#{@seconds_played}",5, 95, 2)
+		@font.draw("#{@total_enemies_destroyed}", 5, 90, 2)
 		
 		if @player.machine_gun == true
 			@font.draw("MG", 5, 45, 2)
@@ -135,6 +137,7 @@ class GalaxyInvaders < Gosu::Window
 					@bullets.delete bullet
 					@explosions.push Explosion.new(self, enemy.x, enemy.y)
 					@enemies_destroyed += 1
+					@total_enemies_destroyed += 1
 					@explosion_sound.play
 				end 
 			end
@@ -165,7 +168,6 @@ class GalaxyInvaders < Gosu::Window
 			@health = Gosu::Color::GREEN
 		end	
 
-		# initialize_end(:count_reached) if @enemy_intruders + @enemies_destroyed >= MAX_ENEMIES
 		@scene = :level_up if @enemy_intruders + @enemies_destroyed >= @max_enemies
 
 		initialize_end(:hit_by_enemy) if @player.exploded
@@ -237,21 +239,18 @@ class GalaxyInvaders < Gosu::Window
 
 	def initialize_end(fate)
 		case fate
-		when :count_reached
-			@message = "You made it! You destroyed #{@enemies_destroyed} ships"
-			@message2 = "and #{@enemy_intruders} reached the base."
 		when :hit_by_enemy
 			@message = "You were struck by an enemy ship."
 			@message2 = "Before your ship was destroyed, "
-			@message2 += "you took out #{@enemies_destroyed} enemy ships."
+			@message2 += "you took out #{@total_enemies_destroyed} enemy ships."
 		when :too_many_intruders
 			@message = "You let too many intruders invade our galaxy."
 			@message2 = "Before the galaxy was invaded, "
-			@message2 += "you destroyed #{@enemies_destroyed} enemy ships."
+			@message2 += "you destroyed #{@total_enemies_destroyed} enemy ships."
 		when :off_top
 			@message = "You got too close to the enemy mother ship."
 			@message2 = "Before your ship was destroyed, "
-			@message2 += "you took out #{@enemies_destroyed} enemy ships."
+			@message2 += "you took out #{@total_enemies_destroyed} enemy ships."
 		end
 		@bottom_message = "Press P to play again, or Q to quit."
 		@message_font = Gosu::Font.new(28)
