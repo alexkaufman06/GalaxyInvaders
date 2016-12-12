@@ -2,6 +2,7 @@ require 'gosu'
 require_relative 'player'
 require_relative 'enemy'
 require_relative 'bullet'
+require_relative 'enemy-bullet'
 require_relative 'explosion'
 require_relative 'credit'
 
@@ -28,6 +29,7 @@ class GalaxyInvaders < Gosu::Window
 		@player = Player.new(self)
 		@enemies = []
 		@bullets = []
+		@enemy_bullets = []
 		@explosions = []
 		@color = Gosu::Color::NONE
 		@health = Gosu::Color::GREEN
@@ -74,11 +76,14 @@ class GalaxyInvaders < Gosu::Window
 		@explosions.each do |explosion|
 			explosion.draw
 		end
+		@enemy_bullets.each do |bullet|
+			bullet.draw
+		end
 		@font.draw("HP", 5, 20, 2)
 		# @font.draw("Dest: #{@enemies_destroyed}", 5, 120, 2)
 		# @font.draw("App: #{@enemies_appeared}", 5, 70, 2)
 		# @font.draw("#{@seconds_played}",5, 95, 2)
-		@font.draw("#{@total_enemies_destroyed}", 5, 90, 2)
+		# @font.draw("#{@total_enemies_destroyed}", 5, 90, 2)
 		
 		if @player.machine_gun == true
 			@font.draw("MG", 5, 45, 2)
@@ -127,7 +132,11 @@ class GalaxyInvaders < Gosu::Window
 
 		@bullets.each do |bullet|
 			bullet.move
-		end 
+		end
+
+		@enemy_bullets.each do |bullet|
+			bullet.move
+		end
   
 		@enemies.dup.each do |enemy|
 			@bullets.dup.each do |bullet|
@@ -160,6 +169,10 @@ class GalaxyInvaders < Gosu::Window
 			@bullets.delete bullet unless bullet.onscreen?
 		end
 
+		@enemy_bullets.dup.each do |bullet|
+			@bullets.delete bullet unless bullet.onscreen?
+		end		
+
 		if @enemy_intruders > 6
 			@health = Gosu::Color::RED
 		elsif @enemy_intruders > 4
@@ -187,6 +200,12 @@ class GalaxyInvaders < Gosu::Window
 			@bullet_fired = Time.now  
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 			@shooting_sound.play(0.3)
+		end
+
+		@enemies.each do |enemy|
+			if rand < 0.003
+				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, 180)
+			end
 		end
 		
 		initialize_end(:off_top) if @player.y < @player.radius
