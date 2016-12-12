@@ -35,6 +35,7 @@ class GalaxyInvaders < Gosu::Window
 		@health = Gosu::Color::GREEN
 		@scene = :game
 		@pressed = false
+		@hit_by_bullet = false
 		@enemies_appeared = 0
 		@enemy_intruders = 0
 		@enemies_destroyed = 0
@@ -183,7 +184,9 @@ class GalaxyInvaders < Gosu::Window
 
 		@scene = :level_up if @enemy_intruders + @enemies_destroyed >= @max_enemies
 
-		initialize_end(:hit_by_enemy) if @player.exploded
+		initialize_end(:hit_by_bullet) if @player.exploded && @hit_by_bullet
+
+		initialize_end(:hit_by_enemy) if @player.exploded && !@hit_by_bullet
 
 		initialize_end(:too_many_intruders) if @enemy_intruders > 9
 
@@ -196,6 +199,18 @@ class GalaxyInvaders < Gosu::Window
 			end
 		end
 
+		@enemy_bullets.dup.each do |enemy_bullet|
+			distance = Gosu.distance(enemy_bullet.x, enemy_bullet.y, @player.x, @player.y)
+			if distance < enemy_bullet.radius + @player.radius
+				@explosions.push Explosion.new(self, @player.x, @player.y)
+				@enemy_bullets.delete enemy_bullet
+				@explosion_sound.play
+				@total_enemies_destroyed += 1
+				@player.explode
+				@hit_by_bullet = true
+			end
+		end
+
 		if @player.machine_gun == true && button_down?(Gosu::KbSpace) && (Time.now - @bullet_fired) >= 0.04
 			@bullet_fired = Time.now  
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
@@ -203,7 +218,7 @@ class GalaxyInvaders < Gosu::Window
 		end
 
 		@enemies.each do |enemy|
-			if rand < 0.003
+			if @level > 2 && rand < 0.003
 				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, 180)
 			end
 		end
@@ -254,12 +269,20 @@ class GalaxyInvaders < Gosu::Window
 		@font.draw("You destroyed " + @enemies_destroyed.to_s + " enemy ships", 250, 110, 2)
 		@font.draw(@enemy_intruders.to_s + " enemies invaded your galaxy", 250, 135, 2)
 		@font.draw("Press P to continue playing", 275, 350, 1,1,1, Gosu::Color::GREEN)
+
+		if @level == 2
+			@font.draw("Watch out! Enemies can now shoot at you.",225,250,1,1,1,Gosu::Color::RED)
+		end
 	end
 
 	def initialize_end(fate)
 		case fate
 		when :hit_by_enemy
 			@message = "You were struck by an enemy ship."
+			@message2 = "Before your ship was destroyed, "
+			@message2 += "you took out #{@total_enemies_destroyed} enemy ships."
+		when :hit_by_bullet
+			@message = "You were struck by enemy fire."
 			@message2 = "Before your ship was destroyed, "
 			@message2 += "you took out #{@total_enemies_destroyed} enemy ships."
 		when :too_many_intruders

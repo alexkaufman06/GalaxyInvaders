@@ -6,7 +6,7 @@ class Bullet
 		@x = x
 		@y = y
 		@direction = angle
-		@image = Gosu::Image.new('images/bullet.png')
+		@image = Gosu::Image.new('images/player-bullet.png')
 		@radius = 3
 		@window = window
 	end
