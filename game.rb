@@ -18,6 +18,7 @@ class GalaxyInvaders < Gosu::Window
 		@scene = :start
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
 		@level = 1
+		@shield_hp = 100
 		@max_enemies = 10
 		@total_enemies_destroyed = 0
 		@enemy_frequency = 0.01
@@ -32,7 +33,8 @@ class GalaxyInvaders < Gosu::Window
 		@enemy_bullets = []
 		@explosions = []
 		@color = Gosu::Color::NONE
-		@health = Gosu::Color::GREEN
+		@health_color = Gosu::Color::GREEN
+		@shield_color = Gosu::Color::BLUE
 		@scene = :game
 		@M_pressed = false
 		@Up_arrow_pressed = false
@@ -83,21 +85,28 @@ class GalaxyInvaders < Gosu::Window
 		@enemy_bullets.each do |bullet|
 			bullet.draw
 		end
-		@font.draw("HP", 5, 20, 2)
+		@font.draw("HP", 5, 14, 2)
+		@font.draw("FF", 5, 35, 2)
 		# @font.draw("Dest: #{@enemies_destroyed}", 5, 120, 2)
 		# @font.draw("App: #{@enemies_appeared}", 5, 70, 2)
 		# @font.draw("#{@seconds_played}",5, 95, 2)
 		# @font.draw("#{@total_enemies_destroyed}", 5, 90, 2)
 		
 		if @player.machine_gun == true
-			@font.draw("MG", 5, 45, 2)
+			@font.draw("MG", 5, 60, 2)
 		end
 
-		draw_quad(35, 20, @health, 135 - (@enemy_intruders * 10), 20, @health, 135 - (@enemy_intruders * 10), 40, @health, 35, 40, @health)
+		draw_quad(35, 20, @health_color, 135 - (@enemy_intruders * 10), 20, @health_color, 135 - (@enemy_intruders * 10), 30, @health_color, 35, 30, @health_color)
 		draw_line(35,20,Gosu::Color::WHITE,135,20,Gosu::Color::WHITE)
-		draw_line(135,20,Gosu::Color::WHITE,135,40,Gosu::Color::WHITE)
-		draw_line(135,40,Gosu::Color::WHITE,35,40,Gosu::Color::WHITE)
-		draw_line(35,40,Gosu::Color::WHITE,35,20,Gosu::Color::WHITE)
+		draw_line(135,20,Gosu::Color::WHITE,135,30,Gosu::Color::WHITE)
+		draw_line(135,30,Gosu::Color::WHITE,35,30,Gosu::Color::WHITE)
+		draw_line(35,30,Gosu::Color::WHITE,35,20,Gosu::Color::WHITE)
+
+		draw_quad(35, 40, @shield_color, 35 + @shield_hp, 40, @shield_color, 35 + @shield_hp, 50, @shield_color, 35, 50, @shield_color)
+		draw_line(35,40,Gosu::Color::WHITE,135,40,Gosu::Color::WHITE)
+		draw_line(135,40,Gosu::Color::WHITE,135,50,Gosu::Color::WHITE)
+		draw_line(135,50,Gosu::Color::WHITE,35,50,Gosu::Color::WHITE)
+		draw_line(35,50,Gosu::Color::WHITE,35,40,Gosu::Color::WHITE)
 	end
 
 	def update
@@ -181,11 +190,11 @@ class GalaxyInvaders < Gosu::Window
 		end		
 
 		if @enemy_intruders > 6
-			@health = Gosu::Color::RED
+			@health_color = Gosu::Color::RED
 		elsif @enemy_intruders > 4
-			@health = Gosu::Color::YELLOW
+			@health_color = Gosu::Color::YELLOW
 		else
-			@health = Gosu::Color::GREEN
+			@health_color = Gosu::Color::GREEN
 		end	
 
 		@scene = :level_up if @enemy_intruders + @enemies_destroyed >= @max_enemies
