@@ -34,7 +34,8 @@ class GalaxyInvaders < Gosu::Window
 		@color = Gosu::Color::NONE
 		@health = Gosu::Color::GREEN
 		@scene = :game
-		@pressed = false
+		@M_pressed = false
+		@Up_arrow_pressed = false
 		@hit_by_bullet = false
 		@enemies_appeared = 0
 		@enemy_intruders = 0
@@ -45,7 +46,9 @@ class GalaxyInvaders < Gosu::Window
 		@start_music.play(true)
 		@explosion_sound = Gosu::Sample.new('sounds/explosion.ogg')
 		@shooting_sound = Gosu::Sample.new('sounds/shoot.ogg')
+		@enemy_shooting_sound = Gosu::Sample.new('sounds/enemy-shoot.wav')
 		@intruder_sound = Gosu::Sample.new('sounds/intruder-alert.wav')
+		@engine_sound = Gosu::Sample.new('sounds/engine.wav')
 	end
 
 	def draw
@@ -109,12 +112,16 @@ class GalaxyInvaders < Gosu::Window
 	def update_game
 		@player.turn_left if button_down?(Gosu::KbLeft)
 		@player.turn_right if button_down?(Gosu::KbRight)
-		@player.accelerate if button_down?(Gosu::KbUp)
-		@player.reverse if button_down?(Gosu::KbDown)
 
-		# if button_down?(Gosu::KbM)
-		# 	@player.use_machine_gun
-		# end
+		if button_down?(Gosu::KbUp)
+			@player.accelerate
+			@engine_sound.play(volume = 0.3, speed = 1, looping = false)
+		end
+
+		if button_down?(Gosu::KbDown)
+			@player.reverse
+			@engine_sound.play(volume = 0.3, speed = 1, looping = false)
+		end
 
 		@seconds_played = (Time.now - START_TIME).to_i
 
@@ -123,7 +130,6 @@ class GalaxyInvaders < Gosu::Window
 
 		if rand < @enemy_frequency && @max_enemies > @enemies_appeared
 			@enemies.push Enemy.new(self, @level)
-
 			@enemies_appeared += 1
 		end
 
@@ -220,6 +226,7 @@ class GalaxyInvaders < Gosu::Window
 		@enemies.each do |enemy|
 			if @level > 2 && rand < 0.003
 				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, 180)
+				@enemy_shooting_sound.play(0.3)
 			end
 		end
 		
@@ -253,14 +260,14 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def button_down_game(id)
-		if id == Gosu::KbM && !@pressed
+		if id == Gosu::KbM && !@M_pressed
 			@player.use_machine_gun
-			@pressed = true
+			@M_pressed = true
 		elsif button_down?(Gosu::KbSpace) && @player.machine_gun != true
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 			@shooting_sound.play(0.3)	
 		elsif not id == Gosu::KbM
-			@pressed = false
+			@M_pressed = false
 		end
 	end
 
