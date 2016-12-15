@@ -37,7 +37,6 @@ class GalaxyInvaders < Gosu::Window
 		@shield_color = Gosu::Color::BLUE
 		@scene = :game
 		@M_pressed = false
-		@Up_arrow_pressed = false
 		@hit_by_bullet = false
 		@enemies_appeared = 0
 		@enemy_intruders = 0
@@ -207,7 +206,14 @@ class GalaxyInvaders < Gosu::Window
 
 		@enemies.each do |enemy|
 			distance = Gosu.distance(enemy.x, enemy.y, @player.x, @player.y)
-			if distance < @player.radius + enemy.radius
+			if distance < @player.radius + enemy.radius && @shield_hp > 0
+				@enemies.delete enemy
+				@explosions.push Explosion.new(self, enemy.x, enemy.y)
+				@explosion_sound.play
+				@total_enemies_destroyed += 1
+				@enemies_destroyed += 1
+				@shield_hp -= 10
+			elsif distance < @player.radius + enemy.radius
 				@explosions.push Explosion.new(self, @player.x, @player.y)
 				@explosion_sound.play
 				@player.explode
@@ -216,7 +222,12 @@ class GalaxyInvaders < Gosu::Window
 
 		@enemy_bullets.dup.each do |enemy_bullet|
 			distance = Gosu.distance(enemy_bullet.x, enemy_bullet.y, @player.x, @player.y)
-			if distance < enemy_bullet.radius + @player.radius
+			if distance < enemy_bullet.radius + @player.radius && @shield_hp > 0
+				@enemy_bullets.delete enemy_bullet
+				@explosions.push Explosion.new(self, enemy_bullet.x, enemy_bullet.y)
+				@explosion_sound.play
+				@shield_hp -= 10
+			elsif distance < enemy_bullet.radius + @player.radius
 				@explosions.push Explosion.new(self, @player.x, @player.y)
 				@enemy_bullets.delete enemy_bullet
 				@explosion_sound.play
@@ -234,7 +245,7 @@ class GalaxyInvaders < Gosu::Window
 
 		@enemies.each do |enemy|
 			if @level > 2 && rand < 0.003
-				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, 180)
+				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, 180, @level)
 				@enemy_shooting_sound.play(0.3)
 			end
 		end
