@@ -19,6 +19,7 @@ class GalaxyInvaders < Gosu::Window
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
 		@level = 1
 		@shield_hp = 100
+		@galaxy_hp = 100
 		@max_enemies = 10
 		@total_enemies_destroyed = 0
 		@enemy_frequency = 0.01
@@ -95,7 +96,7 @@ class GalaxyInvaders < Gosu::Window
 			@font.draw("MG", 5, 60, 2)
 		end
 
-		draw_quad(35, 20, @health_color, 135 - (@enemy_intruders * 10), 20, @health_color, 135 - (@enemy_intruders * 10), 30, @health_color, 35, 30, @health_color)
+		draw_quad(35, 20, @health_color, 35 + @galaxy_hp, 20, @health_color, 35 + @galaxy_hp, 30, @health_color, 35, 30, @health_color)
 		draw_line(35,20,Gosu::Color::WHITE,135,20,Gosu::Color::WHITE)
 		draw_line(135,20,Gosu::Color::WHITE,135,30,Gosu::Color::WHITE)
 		draw_line(135,30,Gosu::Color::WHITE,35,30,Gosu::Color::WHITE)
@@ -175,6 +176,7 @@ class GalaxyInvaders < Gosu::Window
 			if enemy.y > HEIGHT + enemy.radius
 				@enemies.delete enemy
 				@enemy_intruders += 1;
+				@galaxy_hp -= 10;
 				@color = Gosu::Color::RED
 				@intruder_sound.play
 			end
@@ -202,7 +204,7 @@ class GalaxyInvaders < Gosu::Window
 
 		initialize_end(:hit_by_enemy) if @player.exploded && !@hit_by_bullet
 
-		initialize_end(:too_many_intruders) if @enemy_intruders > 9
+		initialize_end(:too_many_intruders) if @galaxy_hp == 0
 
 		@enemies.each do |enemy|
 			distance = Gosu.distance(enemy.x, enemy.y, @player.x, @player.y)
@@ -305,24 +307,24 @@ class GalaxyInvaders < Gosu::Window
 	def initialize_end(fate)
 		case fate
 		when :hit_by_enemy
-			@message = "You were struck by an enemy ship."
+			@message = "You were struck by an enemy ship at level #{@level}."
 			@message2 = "Before your ship was destroyed, "
 			@message2 += "you took out #{@total_enemies_destroyed} enemy ships."
 		when :hit_by_bullet
-			@message = "You were struck by enemy fire."
+			@message = "You were struck by enemy fire at level #{@level}."
 			@message2 = "Before your ship was destroyed, "
 			@message2 += "you took out #{@total_enemies_destroyed} enemy ships."
 		when :too_many_intruders
-			@message = "You let too many intruders invade our galaxy."
+			@message = "You let too many intruders invade our galaxy at level #{@level}."
 			@message2 = "Before the galaxy was invaded, "
 			@message2 += "you destroyed #{@total_enemies_destroyed} enemy ships."
 		when :off_top
-			@message = "You got too close to the enemy mother ship."
+			@message = "You got too close to the enemy mother ship at level #{@level}."
 			@message2 = "Before your ship was destroyed, "
 			@message2 += "you took out #{@total_enemies_destroyed} enemy ships."
 		end
 		@bottom_message = "Press P to play again, or Q to quit."
-		@message_font = Gosu::Font.new(28)
+		@message_font = Gosu::Font.new(25)
 		@credits = []
 		y = 700
 		File.open('credits.txt').each do |line|
