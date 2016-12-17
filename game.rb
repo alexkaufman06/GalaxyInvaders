@@ -15,11 +15,13 @@ class GalaxyInvaders < Gosu::Window
 		super(WIDTH, HEIGHT)
 		self.caption = 'Galaxy Invaders'
 		@background_image = Gosu::Image.new('images/start.png')
+		@hand_image = Gosu::Image.new('images/hand.png')
 		@scene = :start
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
 		@level = 1
 		@shield_hp = 100
 		@galaxy_hp = 100
+		@money = 0
 		@max_enemies = 10
 		@total_enemies_destroyed = 0
 		@enemy_frequency = 0.01
@@ -87,13 +89,14 @@ class GalaxyInvaders < Gosu::Window
 		end
 		@font.draw("HP", 5, 14, 2)
 		@font.draw("FF", 5, 35, 2)
+		@font.draw("$#{@money}", 5, 55, 2)
 		# @font.draw("Dest: #{@enemies_destroyed}", 5, 120, 2)
 		# @font.draw("App: #{@enemies_appeared}", 5, 70, 2)
 		# @font.draw("#{@seconds_played}",5, 95, 2)
 		# @font.draw("#{@total_enemies_destroyed}", 5, 90, 2)
 		
 		if @player.machine_gun == true
-			@font.draw("MG", 5, 60, 2)
+			@font.draw("MG", 5, 80, 2)
 		end
 
 		draw_quad(35, 20, @health_color, 35 + @galaxy_hp, 20, @health_color, 35 + @galaxy_hp, 30, @health_color, 35, 30, @health_color)
@@ -163,6 +166,7 @@ class GalaxyInvaders < Gosu::Window
 					@explosions.push Explosion.new(self, enemy.x, enemy.y)
 					@enemies_destroyed += 1
 					@total_enemies_destroyed += 1
+					@money += 10
 					@explosion_sound.play
 				end 
 			end
@@ -190,12 +194,12 @@ class GalaxyInvaders < Gosu::Window
 			@bullets.delete bullet unless bullet.onscreen?
 		end		
 
-		if @enemy_intruders > 6
-			@health_color = Gosu::Color::RED
-		elsif @enemy_intruders > 4
+		if @galaxy_hp > 60
+			@health_color = Gosu::Color::GREEN
+		elsif @galaxy_hp > 30
 			@health_color = Gosu::Color::YELLOW
 		else
-			@health_color = Gosu::Color::GREEN
+			@health_color = Gosu::Color::RED
 		end	
 
 		@scene = :level_up if @enemy_intruders + @enemies_destroyed >= @max_enemies
@@ -214,6 +218,7 @@ class GalaxyInvaders < Gosu::Window
 				@explosion_sound.play
 				@total_enemies_destroyed += 1
 				@enemies_destroyed += 1
+				@money += 10
 				@shield_hp -= 10
 			elsif distance < @player.radius + enemy.radius
 				@explosions.push Explosion.new(self, @player.x, @player.y)
@@ -278,6 +283,13 @@ class GalaxyInvaders < Gosu::Window
 			@max_enemies += 10
 			@enemy_frequency += 0.0025
 			initialize_game
+		end
+
+		if (id == Gosu::MsLeft) && @galaxy_hp != 100 && @money >= 20
+			if Gosu.distance(mouse_x, mouse_y, 275, 430) < 30
+				@galaxy_hp += 10
+				@money -= 20
+			end
 		end	
 	end
 
@@ -297,10 +309,30 @@ class GalaxyInvaders < Gosu::Window
 		@large_font.draw("You completed level " + @level.to_s, 120, 45, 2)
 		@font.draw("You destroyed " + @enemies_destroyed.to_s + " enemy ships", 250, 110, 2)
 		@font.draw(@enemy_intruders.to_s + " enemies invaded your galaxy", 250, 135, 2)
-		@font.draw("Press P to continue playing", 275, 350, 1,1,1, Gosu::Color::GREEN)
+		@font.draw("Press P to continue playing", 275, 250, 1,1,1, Gosu::Color::GREEN)
+		@hand_image.draw(mouse_x - 11, mouse_y - 13, 1)
+		@font.draw("Money: $#{@money}", 350, 350, 2)
+
+		if @galaxy_hp > 60
+			@health_color = Gosu::Color::GREEN
+		elsif @galaxy_hp > 30
+			@health_color = Gosu::Color::YELLOW
+		else
+			@health_color = Gosu::Color::RED
+		end	
+
+		@font.draw("HP", 100, 413, 2)
+		if @galaxy_hp < 100 && @money >= 20
+			@font.draw("REPAIR", 250, 414, 2)
+		end
+		draw_quad(135, 420, @health_color, 135 + @galaxy_hp, 420, @health_color, 135 + @galaxy_hp, 430, @health_color, 135, 430, @health_color)
+		draw_line(135,420,Gosu::Color::WHITE,235,420,Gosu::Color::WHITE)
+		draw_line(235,420,Gosu::Color::WHITE,235,430,Gosu::Color::WHITE)
+		draw_line(235,430,Gosu::Color::WHITE,135,430,Gosu::Color::WHITE)
+		draw_line(135,430,Gosu::Color::WHITE,135,420,Gosu::Color::WHITE)
 
 		if @level == 2
-			@font.draw("Watch out! Enemies can now shoot at you.",225,250,1,1,1,Gosu::Color::RED)
+			@font.draw("Watch out! Enemies can now shoot at you.",225,200,1,1,1,Gosu::Color::RED)
 		end
 	end
 
