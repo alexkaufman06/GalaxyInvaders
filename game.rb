@@ -286,11 +286,18 @@ class GalaxyInvaders < Gosu::Window
 		end
 
 		if (id == Gosu::MsLeft) && @galaxy_hp != 100 && @money >= 20
-			if Gosu.distance(mouse_x, mouse_y, 275, 430) < 30
+			if Gosu.distance(mouse_x, mouse_y, 280, 435) < 20
 				@galaxy_hp += 10
 				@money -= 20
 			end
-		end	
+		end
+
+		if (id == Gosu::MsLeft) && @shield_hp != 100 && @money >= 20
+			if Gosu.distance(mouse_x, mouse_y, 280, 480) < 20
+				@shield_hp += 10
+				@money -= 20
+			end
+		end
 	end
 
 	def button_down_game(id)
@@ -330,6 +337,16 @@ class GalaxyInvaders < Gosu::Window
 		draw_line(235,420,Gosu::Color::WHITE,235,430,Gosu::Color::WHITE)
 		draw_line(235,430,Gosu::Color::WHITE,135,430,Gosu::Color::WHITE)
 		draw_line(135,430,Gosu::Color::WHITE,135,420,Gosu::Color::WHITE)
+
+		@font.draw("FF", 100, 455, 2)
+		if @shield_hp < 100 && @money >= 20
+			@font.draw("REPAIR", 250, 455, 2)
+		end
+		draw_quad(135, 460, @shield_color, 135 + @shield_hp, 460, @shield_color, 135 + @shield_hp, 470, @shield_color, 135, 470, @shield_color)
+		draw_line(135,460,Gosu::Color::WHITE,235,460,Gosu::Color::WHITE)
+		draw_line(235,460,Gosu::Color::WHITE,235,470,Gosu::Color::WHITE)
+		draw_line(235,470,Gosu::Color::WHITE,135,470,Gosu::Color::WHITE)
+		draw_line(135,470,Gosu::Color::WHITE,135,460,Gosu::Color::WHITE)
 
 		if @level == 2
 			@font.draw("Watch out! Enemies can now shoot at you.",225,200,1,1,1,Gosu::Color::RED)
