@@ -37,6 +37,8 @@ class GalaxyInvaders < Gosu::Window
 		@explosions = []
 		@color = Gosu::Color::NONE
 		@health_color = Gosu::Color::GREEN
+		@repair_hp_color = Gosu::Color::WHITE
+		@repair_ff_color = Gosu::Color::WHITE
 		@shield_color = Gosu::Color::BLUE
 		@scene = :game
 		@M_pressed = false
@@ -313,6 +315,18 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def draw_level_up
+		if Gosu.distance(mouse_x, mouse_y, 280, 435) < 20
+			@repair_hp_color = Gosu::Color::GREEN
+		else
+			@repair_hp_color = Gosu::Color::WHITE
+		end
+
+		if Gosu.distance(mouse_x, mouse_y, 280, 480) < 20
+			@repair_ff_color = Gosu::Color::GREEN
+		else
+			@repair_ff_color = Gosu::Color::WHITE
+		end	
+
 		@large_font.draw("You completed level " + @level.to_s, 120, 45, 2)
 		@font.draw("You destroyed " + @enemies_destroyed.to_s + " enemy ships", 250, 110, 2)
 		@font.draw(@enemy_intruders.to_s + " enemies invaded your galaxy", 250, 135, 2)
@@ -330,7 +344,7 @@ class GalaxyInvaders < Gosu::Window
 
 		@font.draw("HP", 100, 413, 2)
 		if @galaxy_hp < 100 && @money >= 20
-			@font.draw("REPAIR", 250, 414, 2)
+			@font.draw("REPAIR", 250, 414, 1, 1, 1, @repair_hp_color)
 		end
 		draw_quad(135, 420, @health_color, 135 + @galaxy_hp, 420, @health_color, 135 + @galaxy_hp, 430, @health_color, 135, 430, @health_color)
 		draw_line(135,420,Gosu::Color::WHITE,235,420,Gosu::Color::WHITE)
@@ -340,7 +354,7 @@ class GalaxyInvaders < Gosu::Window
 
 		@font.draw("FF", 100, 455, 2)
 		if @shield_hp < 100 && @money >= 20
-			@font.draw("REPAIR", 250, 455, 2)
+			@font.draw("REPAIR", 250, 455, 1, 1, 1, @repair_ff_color)
 		end
 		draw_quad(135, 460, @shield_color, 135 + @shield_hp, 460, @shield_color, 135 + @shield_hp, 470, @shield_color, 135, 470, @shield_color)
 		draw_line(135,460,Gosu::Color::WHITE,235,460,Gosu::Color::WHITE)
