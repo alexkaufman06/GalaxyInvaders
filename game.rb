@@ -35,6 +35,7 @@ class GalaxyInvaders < Gosu::Window
 		@bullets = []
 		@enemy_bullets = []
 		@explosions = []
+		####################################### Colors for HP/FF Display #######################################
 		@color = Gosu::Color::NONE
 		@health_color = Gosu::Color::GREEN
 		@repair_hp_color = Gosu::Color::WHITE
@@ -48,6 +49,7 @@ class GalaxyInvaders < Gosu::Window
 		@enemies_destroyed = 0
 		@seconds_played = 0
 		@bullet_fired = Time.now
+		#################################### Sounds and background music #######################################
 		@game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
 		@start_music.play(true)
 		@explosion_sound = Gosu::Sample.new('sounds/explosion.ogg')
@@ -75,8 +77,10 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def draw_game
+		############################# Covers screen when attacked and draws player #############################
 		draw_quad(0, 0, @color, 800, 0, @color, 800, 600, @color, 0, 600, @color)
 		@player.draw
+		################################## Draw Enemy, Bullets and Explosions ##################################
 		@enemies.each do |enemy|
 			enemy.draw
 		end  
@@ -89,9 +93,11 @@ class GalaxyInvaders < Gosu::Window
 		@enemy_bullets.each do |bullet|
 			bullet.draw
 		end
+		######################################### Labels for display ##########################################
 		@font.draw("HP", 5, 14, 2)
 		@font.draw("FF", 5, 35, 2)
 		@font.draw("$#{@money}", 5, 55, 2)
+		######################################### Testing logic below #########################################
 		# @font.draw("Dest: #{@enemies_destroyed}", 5, 120, 2)
 		# @font.draw("App: #{@enemies_appeared}", 5, 70, 2)
 		# @font.draw("#{@seconds_played}",5, 95, 2)
@@ -101,12 +107,13 @@ class GalaxyInvaders < Gosu::Window
 			@font.draw("MG", 5, 80, 2)
 		end
 
+		########################################### Health Display ###########################################
 		draw_quad(35, 20, @health_color, 35 + @galaxy_hp, 20, @health_color, 35 + @galaxy_hp, 30, @health_color, 35, 30, @health_color)
 		draw_line(35,20,Gosu::Color::WHITE,135,20,Gosu::Color::WHITE)
 		draw_line(135,20,Gosu::Color::WHITE,135,30,Gosu::Color::WHITE)
 		draw_line(135,30,Gosu::Color::WHITE,35,30,Gosu::Color::WHITE)
 		draw_line(35,30,Gosu::Color::WHITE,35,20,Gosu::Color::WHITE)
-
+		########################################### Shield Display ###########################################
 		draw_quad(35, 40, @shield_color, 35 + @shield_hp, 40, @shield_color, 35 + @shield_hp, 50, @shield_color, 35, 50, @shield_color)
 		draw_line(35,40,Gosu::Color::WHITE,135,40,Gosu::Color::WHITE)
 		draw_line(135,40,Gosu::Color::WHITE,135,50,Gosu::Color::WHITE)
