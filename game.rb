@@ -21,12 +21,15 @@ class GalaxyInvaders < Gosu::Window
 		@level = 1
 		@shield_hp = 100
 		@galaxy_hp = 100
+		@machine_gun = 0
+		@fire_rate = 0.5
 		@money = 0
 		@max_enemies = 10
 		@total_enemies_destroyed = 0
 		@enemy_frequency = 0.01
 		@font = Gosu::Font.new(20)
 		@large_font = Gosu::Font.new(60)
+		@white = Gosu::Color::WHITE
 	end
 
 	def initialize_game
@@ -40,9 +43,10 @@ class GalaxyInvaders < Gosu::Window
 		@health_color = Gosu::Color::GREEN
 		@repair_hp_color = Gosu::Color::WHITE
 		@repair_ff_color = Gosu::Color::WHITE
+		@upgrade_mg_color = Gosu::Color::WHITE
 		@shield_color = Gosu::Color::BLUE
+		@machine_gun_color = Gosu::Color::RED
 		@scene = :game
-		@M_pressed = false
 		@hit_by_bullet = false
 		@enemies_appeared = 0
 		@enemy_intruders = 0
@@ -103,9 +107,9 @@ class GalaxyInvaders < Gosu::Window
 		# @font.draw("#{@seconds_played}",5, 95, 2)
 		# @font.draw("#{@total_enemies_destroyed}", 5, 90, 2)
 		
-		if @player.machine_gun == true
-			@font.draw("MG", 5, 80, 2)
-		end
+		# if @player.machine_gun == true
+		# 	@font.draw("MG", 5, 80, 2)
+		# end
 
 		########################################### Health Display ###########################################
 		draw_quad(35, 20, @health_color, 35 + @galaxy_hp, 20, @health_color, 35 + @galaxy_hp, 30, @health_color, 35, 30, @health_color)
@@ -252,8 +256,11 @@ class GalaxyInvaders < Gosu::Window
 				@hit_by_bullet = true
 			end
 		end
-
-		if @player.machine_gun == true && button_down?(Gosu::KbSpace) && (Time.now - @bullet_fired) >= 0.04
+		######################################## Logic for machine gun ########################################
+		#Highest fire rate = 0.04
+		# 0.5 - 0.04
+		# .046 * 10 upgrades
+		if button_down?(Gosu::KbSpace) && (Time.now - @bullet_fired) >= @fire_rate
 			@bullet_fired = Time.now  
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 			@shooting_sound.play(0.3)
@@ -307,32 +314,46 @@ class GalaxyInvaders < Gosu::Window
 				@money -= 20
 			end
 		end
+
+		if (id == Gosu::MsLeft) && @machine_gun != 100 && @money >= 100
+			if Gosu.distance(mouse_x, mouse_y, 660, 435) < 20
+				@machine_gun += 10
+				@fire_rate -= 0.046
+				@money -= 100
+			end
+		end
 	end
 
 	def button_down_game(id)
-		if id == Gosu::KbM && !@M_pressed
-			@player.use_machine_gun
-			@M_pressed = true
-		elsif button_down?(Gosu::KbSpace) && @player.machine_gun != true
-			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
-			@shooting_sound.play(0.3)	
-		elsif not id == Gosu::KbM
-			@M_pressed = false
-		end
+		# if id == Gosu::KbM && !@M_pressed
+		# 	@player.use_machine_gun
+		# 	@M_pressed = true
+		# elsif button_down?(Gosu::KbSpace) && @player.machine_gun != true
+		# 	@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
+		# 	@shooting_sound.play(0.3)	
+		# elsif not id == Gosu::KbM
+		# 	@M_pressed = false
+		# end
 	end
 
 	def draw_level_up
 		if Gosu.distance(mouse_x, mouse_y, 280, 435) < 20
 			@repair_hp_color = Gosu::Color::GREEN
 		else
-			@repair_hp_color = Gosu::Color::WHITE
+			@repair_hp_color = @white
 		end
 
 		if Gosu.distance(mouse_x, mouse_y, 280, 480) < 20
 			@repair_ff_color = Gosu::Color::GREEN
 		else
-			@repair_ff_color = Gosu::Color::WHITE
-		end	
+			@repair_ff_color = @white
+		end
+
+		if Gosu.distance(mouse_x, mouse_y, 660, 435) < 20
+			@upgrade_mg_color = Gosu::Color::GREEN
+		else
+			@upgrade_mg_color = @white
+		end
 
 		@large_font.draw("You completed level " + @level.to_s, 120, 45, 2)
 		@font.draw("You destroyed " + @enemies_destroyed.to_s + " enemy ships", 250, 110, 2)
@@ -347,27 +368,45 @@ class GalaxyInvaders < Gosu::Window
 			@health_color = Gosu::Color::YELLOW
 		else
 			@health_color = Gosu::Color::RED
-		end	
+		end
+
+		if @machine_gun > 60
+			@machine_gun_color = Gosu::Color::GREEN
+		elsif @machine_gun > 30
+			@machine_gun_color = Gosu::Color::YELLOW
+		else
+			@machine_gun_color = Gosu::Color::RED
+		end
 
 		@font.draw("HP", 100, 413, 2)
 		if @galaxy_hp < 100 && @money >= 20
 			@font.draw("REPAIR", 250, 414, 1, 1, 1, @repair_hp_color)
 		end
 		draw_quad(135, 420, @health_color, 135 + @galaxy_hp, 420, @health_color, 135 + @galaxy_hp, 430, @health_color, 135, 430, @health_color)
-		draw_line(135,420,Gosu::Color::WHITE,235,420,Gosu::Color::WHITE)
-		draw_line(235,420,Gosu::Color::WHITE,235,430,Gosu::Color::WHITE)
-		draw_line(235,430,Gosu::Color::WHITE,135,430,Gosu::Color::WHITE)
-		draw_line(135,430,Gosu::Color::WHITE,135,420,Gosu::Color::WHITE)
+		draw_line(135,420,@white,235,420,@white)
+		draw_line(235,420,@white,235,430,@white)
+		draw_line(235,430,@white,135,430,@white)
+		draw_line(135,430,@white,135,420,@white)
 
 		@font.draw("FF", 100, 455, 2)
 		if @shield_hp < 100 && @money >= 20
 			@font.draw("REPAIR", 250, 455, 1, 1, 1, @repair_ff_color)
 		end
 		draw_quad(135, 460, @shield_color, 135 + @shield_hp, 460, @shield_color, 135 + @shield_hp, 470, @shield_color, 135, 470, @shield_color)
-		draw_line(135,460,Gosu::Color::WHITE,235,460,Gosu::Color::WHITE)
-		draw_line(235,460,Gosu::Color::WHITE,235,470,Gosu::Color::WHITE)
-		draw_line(235,470,Gosu::Color::WHITE,135,470,Gosu::Color::WHITE)
-		draw_line(135,470,Gosu::Color::WHITE,135,460,Gosu::Color::WHITE)
+		draw_line(135,460,@white,235,460,@white)
+		draw_line(235,460,@white,235,470,@white)
+		draw_line(235,470,@white,135,470,@white)
+		draw_line(135,470,@white,135,460,@white)
+
+		@font.draw("Machine Gun", 375, 413, 2)
+		if @machine_gun < 100 &&@money >= 100
+			@font.draw("Upgrade", 620, 413, 1, 1, 1, @upgrade_mg_color)
+		end
+		draw_quad(500, 420, @machine_gun_color, 500 + @machine_gun, 420, @machine_gun_color, 500 + @machine_gun, 430, @machine_gun_color, 500, 430, @machine_gun_color)
+		draw_line(500, 420,@white,600,420,@white)
+		draw_line(600, 420,@white,600,430,@white)
+		draw_line(600, 430,@white,500,430,@white)
+		draw_line(500, 430,@white,500,420,@white)
 
 		if @level == 2
 			@font.draw("Watch out! Enemies can now shoot at you.",225,200,1,1,1,Gosu::Color::RED)
