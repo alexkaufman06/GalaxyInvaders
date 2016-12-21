@@ -41,9 +41,9 @@ class GalaxyInvaders < Gosu::Window
 		####################################### Colors for HP/FF Display #######################################
 		@color = Gosu::Color::NONE
 		@health_color = Gosu::Color::GREEN
-		@repair_hp_color = Gosu::Color::WHITE
-		@repair_ff_color = Gosu::Color::WHITE
-		@upgrade_mg_color = Gosu::Color::WHITE
+		@repair_hp_color = @white
+		@repair_ff_color = @white
+		@upgrade_mg_color = @white
 		@shield_color = Gosu::Color::BLUE
 		@machine_gun_color = Gosu::Color::RED
 		@scene = :game
@@ -317,9 +317,9 @@ class GalaxyInvaders < Gosu::Window
 
 		if (id == Gosu::MsLeft) && @machine_gun != 100 && @money >= 100
 			if Gosu.distance(mouse_x, mouse_y, 660, 435) < 20
+				@money -= 100 + (2.5 * @machine_gun)
 				@machine_gun += 10
-				@fire_rate -= 0.046
-				@money -= 100
+				@fire_rate -= 0.046 
 			end
 		end
 	end
@@ -399,8 +399,12 @@ class GalaxyInvaders < Gosu::Window
 		draw_line(135,470,@white,135,460,@white)
 
 		@font.draw("Machine Gun", 375, 413, 2)
-		if @machine_gun < 100 &&@money >= 100
+		if @machine_gun < 100 && @money >= 100 + (2.5 * @machine_gun)
 			@font.draw("Upgrade", 620, 413, 1, 1, 1, @upgrade_mg_color)
+			@font.draw("$#{(@machine_gun * 2.5) + 100}", 710, 413, 1, 1, 1, @upgrade_mg_color)
+		end
+		if @machine_gun < 100 && @money < 100 + (2.5 * @machine_gun)
+			@font.draw("$#{(@machine_gun * 2.5) + 100}", 620, 413, 1, 1, 1, Gosu::Color::RED)
 		end
 		draw_quad(500, 420, @machine_gun_color, 500 + @machine_gun, 420, @machine_gun_color, 500 + @machine_gun, 430, @machine_gun_color, 500, 430, @machine_gun_color)
 		draw_line(500, 420,@white,600,420,@white)
