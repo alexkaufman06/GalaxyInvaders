@@ -296,20 +296,20 @@ class GalaxyInvaders < Gosu::Window
 	def button_down_level_up(id)
 		if id == Gosu::KbP
 			@level += 1
-			@max_enemies += 10
-			@enemy_frequency += 0.0025
+			@max_enemies += 5
+			@enemy_frequency += 0.002
 			initialize_game
 		end
 
 		if (id == Gosu::MsLeft) && @galaxy_hp != 100 && @money >= 20
-			if Gosu.distance(mouse_x, mouse_y, 280, 435) < 20
+			if Gosu.distance(mouse_x, mouse_y, 230, 435) < 20
 				@galaxy_hp += 10
 				@money -= 20
 			end
 		end
 
 		if (id == Gosu::MsLeft) && @shield_hp != 100 && @money >= 20
-			if Gosu.distance(mouse_x, mouse_y, 280, 480) < 20
+			if Gosu.distance(mouse_x, mouse_y, 230, 480) < 20
 				@shield_hp += 10
 				@money -= 20
 			end
@@ -337,13 +337,13 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def draw_level_up
-		if Gosu.distance(mouse_x, mouse_y, 280, 435) < 20
+		if Gosu.distance(mouse_x, mouse_y, 230, 435) < 20
 			@repair_hp_color = Gosu::Color::GREEN
 		else
 			@repair_hp_color = @white
 		end
 
-		if Gosu.distance(mouse_x, mouse_y, 280, 480) < 20
+		if Gosu.distance(mouse_x, mouse_y, 230, 480) < 20
 			@repair_ff_color = Gosu::Color::GREEN
 		else
 			@repair_ff_color = @white
@@ -378,25 +378,27 @@ class GalaxyInvaders < Gosu::Window
 			@machine_gun_color = Gosu::Color::RED
 		end
 
-		@font.draw("HP", 100, 413, 2)
-		if @galaxy_hp < 100 && @money >= 20
-			@font.draw("REPAIR", 250, 414, 1, 1, 1, @repair_hp_color)
-		end
-		draw_quad(135, 420, @health_color, 135 + @galaxy_hp, 420, @health_color, 135 + @galaxy_hp, 430, @health_color, 135, 430, @health_color)
-		draw_line(135,420,@white,235,420,@white)
-		draw_line(235,420,@white,235,430,@white)
-		draw_line(235,430,@white,135,430,@white)
-		draw_line(135,430,@white,135,420,@white)
+		draw_line(0,400,@white,800,400,@white)
 
-		@font.draw("FF", 100, 455, 2)
-		if @shield_hp < 100 && @money >= 20
-			@font.draw("REPAIR", 250, 455, 1, 1, 1, @repair_ff_color)
+		@font.draw("HP", 50, 413, 2)
+		if @galaxy_hp < 100 && @money >= 20
+			@font.draw("REPAIR", 200, 414, 1, 1, 1, @repair_hp_color)
 		end
-		draw_quad(135, 460, @shield_color, 135 + @shield_hp, 460, @shield_color, 135 + @shield_hp, 470, @shield_color, 135, 470, @shield_color)
-		draw_line(135,460,@white,235,460,@white)
-		draw_line(235,460,@white,235,470,@white)
-		draw_line(235,470,@white,135,470,@white)
-		draw_line(135,470,@white,135,460,@white)
+		draw_quad(85, 420, @health_color, 85 + @galaxy_hp, 420, @health_color, 85 + @galaxy_hp, 430, @health_color, 85, 430, @health_color)
+		draw_line(85,420,@white,185,420,@white)
+		draw_line(185,420,@white,185,430,@white)
+		draw_line(185,430,@white,85,430,@white)
+		draw_line(85,430,@white,85,420,@white)
+
+		@font.draw("FF", 50, 455, 2)
+		if @shield_hp < 100 && @money >= 20
+			@font.draw("REPAIR", 200, 455, 1, 1, 1, @repair_ff_color)
+		end
+		draw_quad(85, 460, @shield_color, 85 + @shield_hp, 460, @shield_color, 85 + @shield_hp, 470, @shield_color, 85, 470, @shield_color)
+		draw_line(85,460,@white,185,460,@white)
+		draw_line(185,460,@white,185,470,@white)
+		draw_line(185,470,@white,85,470,@white)
+		draw_line(85,470,@white,85,460,@white)
 
 		@font.draw("Machine Gun", 375, 413, 2)
 		if @machine_gun < 100 && @money >= 100 + (2.5 * @machine_gun)
