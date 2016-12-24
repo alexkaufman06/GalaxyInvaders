@@ -39,14 +39,6 @@ class Player
 		@velocity_y -= Gosu.offset_y(@angle, ACCELERATION)
 	end
 
-	# def use_machine_gun
-	# 	if @machine_gun == false
-	# 		@machine_gun = true
-	# 	else
-	# 		@machine_gun = false
-	# 	end
-	# end
-
 	def move
 		@x += @velocity_x
 		@y += @velocity_y
