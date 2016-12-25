@@ -22,7 +22,7 @@ class GalaxyInvaders < Gosu::Window
 		@shield_hp = 100
 		@galaxy_hp = 100
 		@machine_gun = 0
-		@shotgun = 100
+		@shotgun = 0
 		@fire_rate = 0.5
 		@money = 0
 		@max_enemies = 10
@@ -45,8 +45,10 @@ class GalaxyInvaders < Gosu::Window
 		@repair_hp_color = @white
 		@repair_ff_color = @white
 		@upgrade_mg_color = @white
+		@upgrade_sg_color = @white
 		@shield_color = Gosu::Color::BLUE
 		@machine_gun_color = Gosu::Color::RED
+		@shotgun_color = Gosu::Color::RED
 		@scene = :game
 		@hit_by_bullet = false
 		@enemies_appeared = 0
@@ -254,7 +256,7 @@ class GalaxyInvaders < Gosu::Window
 				@hit_by_bullet = true
 			end
 		end
-		######################################## Logic for machine gun ########################################
+		################################# Logic for machine gun and shot gun ##################################
 		#Highest fire rate = 0.04
 		if button_down?(Gosu::KbSpace) && (Time.now - @bullet_fired) >= @fire_rate
 			if @shotgun == 10 && (Time.now - @shotgun_fired) >= 1.5
@@ -333,6 +335,7 @@ class GalaxyInvaders < Gosu::Window
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
 			end
+		####################################### Logic for machine gun  ########################################
 			@bullet_fired = Time.now  
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 			@shooting_sound.play(0.3)
@@ -387,13 +390,20 @@ class GalaxyInvaders < Gosu::Window
 			end
 		end
 
-		if (id == Gosu::MsLeft) && @machine_gun != 100 && @money >= 100
+		if (id == Gosu::MsLeft) && @machine_gun != 100 && @money >= 100 + (2.5 * @machine_gun)
 			if Gosu.distance(mouse_x, mouse_y, 660, 435) < 20
 				@money -= 100 + (2.5 * @machine_gun)
 				@machine_gun += 10
 				@fire_rate -= 0.046 
 			end
 		end
+
+		if (id == Gosu::MsLeft) && @shot_gun != 100 && @money >= 150 + (2.5 * @shotgun)
+			if Gosu.distance(mouse_x, mouse_y, 660, 477) < 20
+				@money -= 150 + (2.5 * @shotgun)
+				@shotgun += 10           
+			end
+		end		
 	end
 
 	def button_down_game(id)
@@ -419,6 +429,12 @@ class GalaxyInvaders < Gosu::Window
 			@upgrade_mg_color = @white
 		end
 
+		if Gosu.distance(mouse_x, mouse_y, 660, 477) < 20
+			@upgrade_sg_color = Gosu::Color::GREEN
+		else
+			@upgrade_sg_color = @white
+		end
+
 		@large_font.draw("You completed level " + @level.to_s, 120, 45, 2)
 		@font.draw("You destroyed " + @enemies_destroyed.to_s + " enemy ships", 250, 110, 2)
 		@font.draw(@enemy_intruders.to_s + " enemies invaded your galaxy", 250, 135, 2)
@@ -440,6 +456,14 @@ class GalaxyInvaders < Gosu::Window
 			@machine_gun_color = Gosu::Color::YELLOW
 		else
 			@machine_gun_color = Gosu::Color::RED
+		end
+
+		if @shotgun > 60
+			@shotgun_color = Gosu::Color::GREEN
+		elsif @shotgun > 30
+			@shotgun_color = Gosu::Color::YELLOW
+		else
+			@shotgun_color = Gosu::Color::RED
 		end
 
 		draw_line(0,400,@white,800,400,@white)
@@ -468,8 +492,7 @@ class GalaxyInvaders < Gosu::Window
 		if @machine_gun < 100 && @money >= 100 + (2.5 * @machine_gun)
 			@font.draw("Upgrade", 620, 413, 1, 1, 1, @upgrade_mg_color)
 			@font.draw("$#{(@machine_gun * 2.5) + 100}", 710, 413, 1, 1, 1, @upgrade_mg_color)
-		end
-		if @machine_gun < 100 && @money < 100 + (2.5 * @machine_gun)
+		elsif @machine_gun < 100 && @money < 100 + (2.5 * @machine_gun)
 			@font.draw("$#{(@machine_gun * 2.5) + 100}", 620, 413, 1, 1, 1, Gosu::Color::RED)
 		end
 		draw_quad(500, 420, @machine_gun_color, 500 + @machine_gun, 420, @machine_gun_color, 500 + @machine_gun, 430, @machine_gun_color, 500, 430, @machine_gun_color)
@@ -477,6 +500,19 @@ class GalaxyInvaders < Gosu::Window
 		draw_line(600, 420,@white,600,430,@white)
 		draw_line(600, 430,@white,500,430,@white)
 		draw_line(500, 430,@white,500,420,@white)
+
+		@font.draw("Shotgun", 375, 455, 2)
+		if @shotgun < 100 && @money >= 150 + (2.5 * @shotgun)
+			@font.draw("Upgade", 620, 455, 1, 1, 1, @upgrade_sg_color)
+			@font.draw("#{(@shotgun * 2.5 + 150)}", 710, 455, 1, 1, 1, @upgrade_sg_color)
+		elsif @shotgun < 100 && @money < 150 + (2.5 * @shotgun)
+			@font.draw("$#{(@shotgun * 2.5) + 150}", 620, 455, 1, 1, 1, Gosu::Color::RED)
+		end
+		draw_quad(500, 462, @shotgun_color, 500 + @shotgun, 462, @shotgun_color, 500 + @shotgun, 472, @shotgun_color, 500, 472, @shotgun_color)
+		draw_line(500, 462, @white, 600, 462, @white)
+		draw_line(600, 462, @white, 600, 472, @white)
+		draw_line(600, 472, @white, 500, 472, @white)
+		draw_line(500, 472, @white, 500, 462, @white)
 
 		if @level == 2
 			@font.draw("Watch out! Enemies can now shoot at you.",225,200,1,1,1,Gosu::Color::RED)
