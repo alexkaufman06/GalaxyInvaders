@@ -40,7 +40,7 @@ class GalaxyInvaders < Gosu::Window
 		@enemy_bullets = []
 		@explosions = []
 		####################################### Colors for HP/FF Display #######################################
-		@color = Gosu::Color::NONE
+		@intruder_alert_color = Gosu::Color::NONE
 		@health_color = Gosu::Color::GREEN
 		@repair_hp_color = @white
 		@repair_ff_color = @white
@@ -86,7 +86,7 @@ class GalaxyInvaders < Gosu::Window
 
 	def draw_game
 		############################# Covers screen when attacked and draws player #############################
-		draw_quad(0, 0, @color, 800, 0, @color, 800, 600, @color, 0, 600, @color)
+		draw_quad(0, 0, @intruder_alert_color, 800, 0, @intruder_alert_color, 800, 600, @intruder_alert_color, 0, 600, @intruder_alert_color)
 		@player.draw
 		################################## Draw Enemy, Bullets and Explosions ##################################
 		@enemies.each do |enemy|
@@ -110,7 +110,6 @@ class GalaxyInvaders < Gosu::Window
 		# @font.draw("App: #{@enemies_appeared}", 5, 70, 2)
 		# @font.draw("#{@seconds_played}",5, 95, 2)
 		# @font.draw("#{@total_enemies_destroyed}", 5, 90, 2)
-
 		########################################### Health Display ###########################################
 		draw_quad(35, 20, @health_color, 35 + @galaxy_hp, 20, @health_color, 35 + @galaxy_hp, 30, @health_color, 35, 30, @health_color)
 		draw_line(35,20,Gosu::Color::WHITE,135,20,Gosu::Color::WHITE)
@@ -135,41 +134,37 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def update_game
+		########################################## Spaceship controls ##########################################
 		@player.turn_left if button_down?(Gosu::KbLeft)
 		@player.turn_right if button_down?(Gosu::KbRight)
-
 		if button_down?(Gosu::KbUp)
 			@player.accelerate
 			@engine_sound.play(volume = 0.3, speed = 1, looping = false)
 		end
-
 		if button_down?(Gosu::KbDown)
 			@player.reverse
 			@engine_sound.play(volume = 0.3, speed = 1, looping = false)
 		end
-
+		####################### Move player, seconds played, and intruder color for flash ######################
 		@seconds_played = (Time.now - START_TIME).to_i
-
 		@player.move
-		@color = Gosu::Color::NONE
-
+		@intruder_alert_color = Gosu::Color::NONE
+		########################################## Randomized enemies ##########################################
 		if rand < @enemy_frequency && @max_enemies > @enemies_appeared
 			@enemies.push Enemy.new(self, @level)
 			@enemies_appeared += 1
 		end
-
+		####################################### Move enemies and bullets #######################################
 		@enemies.each do |enemy|
 			enemy.move
 		end
-
 		@bullets.each do |bullet|
 			bullet.move
 		end
-
 		@enemy_bullets.each do |bullet|
 			bullet.move
 		end
-  
+  	############################# Collision detection for enemies and bullets ##############################
 		@enemies.dup.each do |enemy|
 			@bullets.dup.each do |bullet|
 				distance = Gosu.distance(enemy.x, enemy.y, bullet.x, bullet.y)
@@ -184,29 +179,26 @@ class GalaxyInvaders < Gosu::Window
 				end 
 			end
 		end
-
+		############################## Remove explosions, enemies, and bullets #################################
 		@explosions.dup.each do |explosion|
 			@explosions.delete explosion if explosion.finished
 		end
-
 		@enemies.dup.each do|enemy|
 			if enemy.y > HEIGHT + enemy.radius
 				@enemies.delete enemy
 				@enemy_intruders += 1;
 				@galaxy_hp -= 10;
-				@color = Gosu::Color::RED
+				@intruder_alert_color = Gosu::Color::RED
 				@intruder_sound.play
 			end
 		end
-
 		@bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
 		end
-
 		@enemy_bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
 		end		
-
+		####################################### Colors for HP/FF Display #######################################
 		if @galaxy_hp > 60
 			@health_color = Gosu::Color::GREEN
 		elsif @galaxy_hp > 30
@@ -214,15 +206,12 @@ class GalaxyInvaders < Gosu::Window
 		else
 			@health_color = Gosu::Color::RED
 		end	
-
+		########################################## Scene transitions ###########################################
 		@scene = :level_up if @enemy_intruders + @enemies_destroyed >= @max_enemies
-
 		initialize_end(:hit_by_bullet) if @player.exploded && @hit_by_bullet
-
 		initialize_end(:hit_by_enemy) if @player.exploded && !@hit_by_bullet
-
 		initialize_end(:too_many_intruders) if @galaxy_hp == 0
-
+		############################# Collision detection for enemies and player ###############################
 		@enemies.each do |enemy|
 			distance = Gosu.distance(enemy.x, enemy.y, @player.x, @player.y)
 			if distance < @player.radius + enemy.radius && @shield_hp > 0
@@ -239,7 +228,7 @@ class GalaxyInvaders < Gosu::Window
 				@player.explode
 			end
 		end
-
+		########################### Collision detection for player and enemy bullets ############################
 		@enemy_bullets.dup.each do |enemy_bullet|
 			distance = Gosu.distance(enemy_bullet.x, enemy_bullet.y, @player.x, @player.y)
 			if distance < enemy_bullet.radius + @player.radius && @shield_hp > 0
