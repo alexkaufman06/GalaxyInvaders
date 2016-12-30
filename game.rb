@@ -2,6 +2,7 @@ require 'gosu'
 require_relative 'player'
 require_relative 'enemy'
 require_relative 'bullet'
+require_relative 'missile'
 require_relative 'enemy-bullet'
 require_relative 'explosion'
 require_relative 'credit'
@@ -38,6 +39,7 @@ class GalaxyInvaders < Gosu::Window
 		@enemies = []
 		@bullets = []
 		@enemy_bullets = []
+		@missiles = []
 		@explosions = []
 		####################################### Colors for HP/FF Display #######################################
 		@intruder_alert_color = Gosu::Color::NONE
@@ -57,6 +59,7 @@ class GalaxyInvaders < Gosu::Window
 		@seconds_played = 0
 		@bullet_fired = Time.now
 		@shotgun_fired = Time.now
+		@missile_fired = Time.now                           
 		#################################### Sounds and background music #######################################
 		@game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
 		@start_music.play(true)
@@ -94,6 +97,9 @@ class GalaxyInvaders < Gosu::Window
 		end  
 		@bullets.each do |bullet|
 			bullet.draw
+		end
+		@missiles.each do |missile|
+			missile.draw
 		end
 		@explosions.each do |explosion|
 			explosion.draw
@@ -160,6 +166,9 @@ class GalaxyInvaders < Gosu::Window
 		end
 		@bullets.each do |bullet|
 			bullet.move
+		end
+		@missiles.each do |missile|
+			missile.move
 		end
 		@enemy_bullets.each do |bullet|
 			bullet.move
@@ -335,6 +344,12 @@ class GalaxyInvaders < Gosu::Window
 				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, 180, @level)
 				@enemy_shooting_sound.play(0.3)
 			end
+		end
+
+		####### missile logic
+		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= 2
+			@missile_fired = Time.now
+			@missiles.push Missile.new(self, @player.x, @player.y, @player.angle, @enemies)
 		end
 		
 		initialize_end(:off_top) if @player.y < @player.radius
