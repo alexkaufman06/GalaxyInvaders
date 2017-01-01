@@ -14,19 +14,26 @@ class Missile
 	end
 
 	def move
-		@nearest_enemy_distance = 1000
 		@distance = 0
 		@distance_nearest = 0
-		@enemies.each do |enemy|
-			@distance = Gosu.distance(enemy.x, enemy.y, @x, @y)
-			@distance_nearest = Gosu.distance(@nearest_enemy.x, @nearest_enemy.y, @x, @y)
-			if @distance < @distance_nearest
-				@nearest_enemy = enemy
-			end 
+		if @enemies.count >= 0
+			@enemies.each do |enemy|
+				if @enemies[0] == enemy
+					@distance = Gosu.distance(enemy.x, enemy.y, @x, @y)
+					@distance_nearest = Gosu.distance(@nearest_enemy.x, @nearest_enemy.y, @x, @y)
+					if @distance < @distance_nearest
+						@nearest_enemy = enemy
+					end
+
+					@direction = Gosu.angle(@x, @y, @nearest_enemy.x, @nearest_enemy.y)
+					@x += Gosu.offset_x(@direction, SPEED)
+					@y += Gosu.offset_y(@direction, SPEED)
+				end
+			end
+		elsif
+			@x += Gosu.offset_x(@direction, SPEED)
+			@y += Gosu.offset_y(@direction, SPEED)
 		end
-		@homing_angle = Gosu.angle(@x, @y, @nearest_enemy.x, @nearest_enemy.y)
-		@x += Gosu.offset_x(@homing_angle, SPEED)
-		@y += Gosu.offset_y(@homing_angle, SPEED)
 	end
 
 	def draw

@@ -24,6 +24,7 @@ class GalaxyInvaders < Gosu::Window
 		@galaxy_hp = 100
 		@machine_gun = 0
 		@shotgun = 0
+		@missle = 0
 		@fire_rate = 0.5
 		@money = 0
 		@max_enemies = 10
@@ -94,7 +95,7 @@ class GalaxyInvaders < Gosu::Window
 		################################## Draw Enemy, Bullets and Explosions ##################################
 		@enemies.each do |enemy|
 			enemy.draw
-		end  
+		end         
 		@bullets.each do |bullet|
 			bullet.draw
 		end
@@ -102,7 +103,7 @@ class GalaxyInvaders < Gosu::Window
 			missile.draw
 		end
 		@explosions.each do |explosion|
-			explosion.draw
+			explosion.draw           
 		end
 		@enemy_bullets.each do |bullet|
 			bullet.draw
@@ -187,6 +188,21 @@ class GalaxyInvaders < Gosu::Window
 					@explosion_sound.play
 				end 
 			end
+		end  	
+		############################# Collision detection for enemies and missiles ##############################
+		@enemies.dup.each do |enemy|
+			@missiles.dup.each do |missile|
+				distance = Gosu.distance(enemy.x, enemy.y, missile.x, missile.y)
+				if distance < enemy.radius + missile.radius
+					@enemies.delete enemy
+					@missiles.delete missile
+					@explosions.push Explosion.new(self, enemy.x, enemy.y)
+					@enemies_destroyed += 1
+					@total_enemies_destroyed += 1
+					@money += 10
+					@explosion_sound.play
+				end 
+			end
 		end
 		############################## Remove explosions, enemies, and bullets #################################
 		@explosions.dup.each do |explosion|
@@ -196,13 +212,16 @@ class GalaxyInvaders < Gosu::Window
 			if enemy.y > HEIGHT + enemy.radius
 				@enemies.delete enemy
 				@enemy_intruders += 1;
-				@galaxy_hp -= 10;
+				@galaxy_hp -= 10;                
 				@intruder_alert_color = Gosu::Color::RED
 				@intruder_sound.play
 			end
 		end
 		@bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
+		end		
+		@missiles.dup.each do |missile|
+			@missiles.delete missile unless missile.onscreen?
 		end
 		@enemy_bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
@@ -347,7 +366,7 @@ class GalaxyInvaders < Gosu::Window
 		end
 
 		####### missile logic
-		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= 2
+		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= 2 && @enemies.count != 0 &&
 			@missile_fired = Time.now
 			@missiles.push Missile.new(self, @player.x, @player.y, @player.angle, @enemies)
 		end
