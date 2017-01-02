@@ -9,14 +9,15 @@ class Missile
 		@image = Gosu::Image.new('images/player-bullet.png')
 		@radius = 3
 		@window = window
-		@nearest_enemy = enemies[0]
+		# @nearest_enemy = enemies[0] #Use this variable and not the one below for sticky bomb
 		@enemies = enemies
 	end
 
 	def move
 		@distance = 0
 		@distance_nearest = 0
-		if @enemies.count >= 0
+		@nearest_enemy = @enemies[0]
+		if @enemies.count > 0
 			@enemies.each do |enemy|
 				if @enemies[0] == enemy
 					@distance = Gosu.distance(enemy.x, enemy.y, @x, @y)
@@ -30,9 +31,11 @@ class Missile
 					@y += Gosu.offset_y(@direction, SPEED)
 				end
 			end
-		elsif
-			@x += Gosu.offset_x(@direction, SPEED)
-			@y += Gosu.offset_y(@direction, SPEED)
+		else
+			# Could have the missiles move around the player?
+			# @direction = Gosu.angle(@x, @y, 200, 200) 
+			@x += Gosu.offset_x(1, SPEED)
+			@y += Gosu.offset_y(1, SPEED)
 		end
 	end
 
