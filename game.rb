@@ -24,7 +24,7 @@ class GalaxyInvaders < Gosu::Window
 		@galaxy_hp = 100
 		@machine_gun = 0
 		@shotgun = 0
-		@missle = 0
+		@missile = 0
 		@fire_rate = 0.5
 		@money = 0
 		@max_enemies = 10
@@ -49,9 +49,11 @@ class GalaxyInvaders < Gosu::Window
 		@repair_ff_color = @white
 		@upgrade_mg_color = @white
 		@upgrade_sg_color = @white
+		@upgrade_hm_color = @white
 		@shield_color = Gosu::Color::BLUE
 		@machine_gun_color = Gosu::Color::RED
 		@shotgun_color = Gosu::Color::RED
+		@missile_color = Gosu::Color::RED
 		@scene = :game
 		@hit_by_bullet = false
 		@enemies_appeared = 0
@@ -365,8 +367,8 @@ class GalaxyInvaders < Gosu::Window
 			end
 		end
 
-		####### missile logic
-		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= 2 && @enemies.count != 0 &&
+		##################################### Logic for homing missiles  ######################################
+		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= (2 - (@missile / 100)) && @enemies.count != 0 && @missile != 0
 			@missile_fired = Time.now
 			@missiles.push Missile.new(self, @player.x, @player.y, @player.angle, @enemies)
 		end
@@ -426,7 +428,14 @@ class GalaxyInvaders < Gosu::Window
 				@money -= 150 + (2.5 * @shotgun)
 				@shotgun += 10           
 			end
-		end		
+		end
+
+		if (id == Gosu::MsLeft) && @missile != 100 && @money >= 200 + (2.5 * @missile)
+			if Gosu.distance(mouse_x, mouse_y, 660, 519) < 20
+				@money -= 200 + (2.5 * @missile)
+				@missile += 10           
+			end
+		end	
 	end
 
 	def button_down_game(id)
@@ -456,6 +465,12 @@ class GalaxyInvaders < Gosu::Window
 			@upgrade_sg_color = Gosu::Color::GREEN
 		else
 			@upgrade_sg_color = @white
+		end
+
+		if Gosu.distance(mouse_x, mouse_y, 660, 519) < 20
+			@upgrade_hm_color = Gosu::Color::GREEN
+		else
+			@upgrade_hm_color = @white
 		end
 
 		@large_font.draw("You completed level " + @level.to_s, 120, 45, 2)
@@ -489,6 +504,14 @@ class GalaxyInvaders < Gosu::Window
 			@shotgun_color = Gosu::Color::RED
 		end
 
+		if @missile > 60
+			@missile_color = Gosu::Color::GREEN
+		elsif @missile > 30
+			@missile_color = Gosu::Color::YELLOW
+		else
+			@missile_color = Gosu::Color::RED
+		end
+
 		draw_line(0,400,@white,800,400,@white)
 
 		@font.draw("HP", 50, 413, 2)
@@ -511,7 +534,7 @@ class GalaxyInvaders < Gosu::Window
 		draw_line(185,470,@white,85,470,@white)
 		draw_line(85,470,@white,85,460,@white)
 
-		@font.draw("Machine Gun", 375, 413, 2)
+		@font.draw("Machine Gun", 360, 413, 2)
 		if @machine_gun < 100 && @money >= 100 + (2.5 * @machine_gun)
 			@font.draw("Upgrade", 620, 413, 1, 1, 1, @upgrade_mg_color)
 			@font.draw("$#{(@machine_gun * 2.5) + 100}", 710, 413, 1, 1, 1, @upgrade_mg_color)
@@ -524,10 +547,10 @@ class GalaxyInvaders < Gosu::Window
 		draw_line(600, 430,@white,500,430,@white)
 		draw_line(500, 430,@white,500,420,@white)
 
-		@font.draw("Shotgun", 375, 455, 2)
+		@font.draw("Shotgun", 360, 455, 2)
 		if @shotgun < 100 && @money >= 150 + (2.5 * @shotgun)
-			@font.draw("Upgade", 620, 455, 1, 1, 1, @upgrade_sg_color)
-			@font.draw("#{(@shotgun * 2.5 + 150)}", 710, 455, 1, 1, 1, @upgrade_sg_color)
+			@font.draw("Upgrade", 620, 455, 1, 1, 1, @upgrade_sg_color)
+			@font.draw("$#{(@shotgun * 2.5 + 150)}", 710, 455, 1, 1, 1, @upgrade_sg_color)
 		elsif @shotgun < 100 && @money < 150 + (2.5 * @shotgun)
 			@font.draw("$#{(@shotgun * 2.5) + 150}", 620, 455, 1, 1, 1, Gosu::Color::RED)
 		end
@@ -536,6 +559,19 @@ class GalaxyInvaders < Gosu::Window
 		draw_line(600, 462, @white, 600, 472, @white)
 		draw_line(600, 472, @white, 500, 472, @white)
 		draw_line(500, 472, @white, 500, 462, @white)
+
+		@font.draw("Homing Missile", 360, 497, 2)
+		if @missile < 100 && @money >= 200 + (2.5 * @missile)
+			@font.draw("Upgrade", 620, 497, 1, 1, 1, @upgrade_hm_color)
+			@font.draw("$#{@missile * 2.5 + 200}", 710, 497, 1, 1, 1, @upgrade_hm_color)
+		elsif @shotgun < 100 && @money < 200 + (2.5 * @missile)
+			@font.draw("$#{@missile * 2.5 + 200}", 620, 497, 1, 1, 1, Gosu::Color::RED)
+		end
+		draw_quad(500, 504, @missile_color, 500 + @missile, 504, @missile_color, 500 + @missile, 514, @missile_color, 500, 514, @missile_color)
+		draw_line(500, 504, @white, 600, 504, @white)
+		draw_line(600, 504, @white, 600, 514, @white)
+		draw_line(600, 514, @white, 500, 514, @white)
+		draw_line(500, 514, @white, 500, 504, @white)	
 
 		if @level == 2
 			@font.draw("Watch out! Enemies can now shoot at you.",225,200,1,1,1,Gosu::Color::RED)
