@@ -71,6 +71,7 @@ class GalaxyInvaders < Gosu::Window
 		@enemy_shooting_sound = Gosu::Sample.new('sounds/enemy-shoot.wav')
 		@intruder_sound = Gosu::Sample.new('sounds/intruder-alert.wav')
 		@engine_sound = Gosu::Sample.new('sounds/engine.wav')
+		@cash_register_sound = Gosu::Sample.new('sounds/cash-register.wav')
 	end
 
 	def draw
@@ -405,6 +406,7 @@ class GalaxyInvaders < Gosu::Window
 			if Gosu.distance(mouse_x, mouse_y, 230, 435) < 20
 				@galaxy_hp += 10
 				@money -= 20
+				@cash_register_sound.play
 			end
 		end
 
@@ -412,6 +414,7 @@ class GalaxyInvaders < Gosu::Window
 			if Gosu.distance(mouse_x, mouse_y, 230, 480) < 20
 				@shield_hp += 10
 				@money -= 20
+				@cash_register_sound.play
 			end
 		end
 
@@ -419,21 +422,24 @@ class GalaxyInvaders < Gosu::Window
 			if Gosu.distance(mouse_x, mouse_y, 660, 435) < 20
 				@money -= 100 + (2.5 * @machine_gun)
 				@machine_gun += 10
-				@fire_rate -= 0.046 
+				@fire_rate -= 0.046
+				@cash_register_sound.play 
 			end
 		end
 
 		if (id == Gosu::MsLeft) && @shot_gun != 100 && @money >= 150 + (2.5 * @shotgun)
 			if Gosu.distance(mouse_x, mouse_y, 660, 477) < 20
 				@money -= 150 + (2.5 * @shotgun)
-				@shotgun += 10           
+				@shotgun += 10
+				@cash_register_sound.play
 			end
 		end
 
 		if (id == Gosu::MsLeft) && @missile != 100 && @money >= 200 + (2.5 * @missile)
 			if Gosu.distance(mouse_x, mouse_y, 660, 519) < 20
 				@money -= 200 + (2.5 * @missile)
-				@missile += 10           
+				@missile += 10
+				@cash_register_sound.play
 			end
 		end	
 	end
