@@ -72,6 +72,8 @@ class GalaxyInvaders < Gosu::Window
 		@intruder_sound = Gosu::Sample.new('sounds/intruder-alert.wav')
 		@engine_sound = Gosu::Sample.new('sounds/engine.wav')
 		@cash_register_sound = Gosu::Sample.new('sounds/cash-register.wav')
+		@shotgun_sound = Gosu::Sample.new('sounds/shotgun.wav')
+		@missile_sound = Gosu::Sample.new('sounds/missile.wav')
 	end
 
 	def draw
@@ -282,21 +284,25 @@ class GalaxyInvaders < Gosu::Window
 			if @shotgun == 10 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@shotgun_sound.play
 			elsif @shotgun == 20 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
 			elsif @shotgun == 30 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
 			elsif @shotgun == 40 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
 			elsif @shotgun == 50 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 15))
@@ -304,6 +310,7 @@ class GalaxyInvaders < Gosu::Window
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
 			elsif @shotgun == 60 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 15))
@@ -312,6 +319,7 @@ class GalaxyInvaders < Gosu::Window
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
 			elsif @shotgun == 70 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 20))
@@ -321,6 +329,7 @@ class GalaxyInvaders < Gosu::Window
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
 			elsif @shotgun == 80 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 20))
@@ -331,6 +340,7 @@ class GalaxyInvaders < Gosu::Window
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
 			elsif @shotgun == 90 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 25))
@@ -342,6 +352,7 @@ class GalaxyInvaders < Gosu::Window
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
 			elsif @shotgun == 100 && (Time.now - @shotgun_fired) >= 1.5
 				@shotgun_fired = Time.now
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 25))
@@ -354,6 +365,7 @@ class GalaxyInvaders < Gosu::Window
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
 				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
 			end
 		####################################### Logic for machine gun  ########################################
 			@bullet_fired = Time.now  
@@ -372,6 +384,7 @@ class GalaxyInvaders < Gosu::Window
 		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= (2 - (@missile / 100)) && @enemies.count != 0 && @missile != 0
 			@missile_fired = Time.now
 			@missiles.push Missile.new(self, @player.x, @player.y, @player.angle, @enemies)
+			@missile_sound.play
 		end
 		
 		initialize_end(:off_top) if @player.y < @player.radius
