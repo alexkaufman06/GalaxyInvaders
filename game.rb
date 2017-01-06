@@ -84,6 +84,8 @@ class GalaxyInvaders < Gosu::Window
 			draw_game
 		when :level_up
 			draw_level_up
+		when :boss_1
+			draw_boss_1
 		when :end
 			draw_end
 		end
@@ -140,9 +142,20 @@ class GalaxyInvaders < Gosu::Window
 		case @scene
 		when :game
 			update_game
+		when :boss_1
+			update_boss_1
 		when :end
 			update_end
 		end
+	end
+
+	def draw_boss_1
+		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
+		@font.draw("Press P to continue playing", 275, 250, 1,1,1, Gosu::Color::GREEN)
+	end
+
+	def update_boss_1
+
 	end
 
 	def update_game
@@ -244,6 +257,7 @@ class GalaxyInvaders < Gosu::Window
 		initialize_end(:hit_by_bullet) if @player.exploded && @hit_by_bullet
 		initialize_end(:hit_by_enemy) if @player.exploded && !@hit_by_bullet
 		initialize_end(:too_many_intruders) if @galaxy_hp == 0
+		@scene = :boss_1 if @level == 1 && @enemy_intruders + @enemies_destroyed >= @max_enemies
 		############################# Collision detection for enemies and player ###############################
 		@enemies.each do |enemy|
 			distance = Gosu.distance(enemy.x, enemy.y, @player.x, @player.y)
@@ -398,6 +412,8 @@ class GalaxyInvaders < Gosu::Window
 			button_down_game(id)
 		when :level_up
 			button_down_level_up(id)
+		when :boss_1
+			button_down_boss_1(id)
 		when :end
 			button_down_end(id)
 		end
@@ -405,6 +421,12 @@ class GalaxyInvaders < Gosu::Window
 
 	def button_down_start(id)
 		initialize_game
+	end
+
+	def button_down_boss_1(id)
+		if id == Gosu::KbP
+			@scene = :level_up
+		end
 	end
 
 	def button_down_level_up(id)
