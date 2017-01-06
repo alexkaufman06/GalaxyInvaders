@@ -76,6 +76,13 @@ class GalaxyInvaders < Gosu::Window
 		@missile_sound = Gosu::Sample.new('sounds/missile.wav')
 	end
 
+	def initialize_warning
+		@scene = :boss_warning
+		@warning_sound = Gosu::Song.new('sounds/warning.wav')
+		@boss_1_sound = Gosu::Song.new('sounds/boss-loop.wav')
+		@warning_sound.play(true)
+	end
+
 	def draw
 		case @scene
 		when :start
@@ -84,6 +91,8 @@ class GalaxyInvaders < Gosu::Window
 			draw_game
 		when :level_up
 			draw_level_up
+		when :boss_warning
+			draw_boss_warning
 		when :boss_1
 			draw_boss_1
 		when :end
@@ -142,6 +151,8 @@ class GalaxyInvaders < Gosu::Window
 		case @scene
 		when :game
 			update_game
+		when :boss_warning
+			update_boss_warning
 		when :boss_1
 			update_boss_1
 		when :end
@@ -149,12 +160,52 @@ class GalaxyInvaders < Gosu::Window
 		end
 	end
 
-	def draw_boss_1
+	def draw_boss_warning
+		@start_music.stop
 		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
 		@font.draw("Press P to continue playing", 275, 250, 1,1,1, Gosu::Color::GREEN)
+		@warning_sound.play(true)
+	end
+
+	def draw_boss_1
+		@start_music.stop
+		@boss_1_sound.play(true)
+		@player.draw
+		######################################### Labels for display ##########################################
+		@font.draw("HP", 5, 14, 2)
+		@font.draw("FF", 5, 35, 2)
+		@font.draw("$#{@money}", 5, 55, 2)
+		########################################### Health Display ###########################################
+		draw_quad(35, 20, @health_color, 35 + @galaxy_hp, 20, @health_color, 35 + @galaxy_hp, 30, @health_color, 35, 30, @health_color)
+		draw_line(35,20,Gosu::Color::WHITE,135,20,Gosu::Color::WHITE)
+		draw_line(135,20,Gosu::Color::WHITE,135,30,Gosu::Color::WHITE)
+		draw_line(135,30,Gosu::Color::WHITE,35,30,Gosu::Color::WHITE)
+		draw_line(35,30,Gosu::Color::WHITE,35,20,Gosu::Color::WHITE)
+		########################################### Shield Display ###########################################
+		draw_quad(35, 40, @shield_color, 35 + @shield_hp, 40, @shield_color, 35 + @shield_hp, 50, @shield_color, 35, 50, @shield_color)
+		draw_line(35,40,Gosu::Color::WHITE,135,40,Gosu::Color::WHITE)
+		draw_line(135,40,Gosu::Color::WHITE,135,50,Gosu::Color::WHITE)
+		draw_line(135,50,Gosu::Color::WHITE,35,50,Gosu::Color::WHITE)
+		draw_line(35,50,Gosu::Color::WHITE,35,40,Gosu::Color::WHITE)
 	end
 
 	def update_boss_1
+		@player.turn_left if button_down?(Gosu::KbLeft)
+		@player.turn_right if button_down?(Gosu::KbRight)
+		if button_down?(Gosu::KbUp)
+			@player.accelerate
+			@engine_sound.play(volume = 0.3, speed = 1, looping = false)
+		end
+		if button_down?(Gosu::KbDown)
+			@player.reverse
+			@engine_sound.play(volume = 0.3, speed = 1, looping = false)
+		end
+		####################### Move player, seconds played, and intruder color for flash ######################
+		@seconds_played = (Time.now - START_TIME).to_i
+		@player.move
+	end
+
+	def update_boss_warning
 
 	end
 
@@ -257,7 +308,7 @@ class GalaxyInvaders < Gosu::Window
 		initialize_end(:hit_by_bullet) if @player.exploded && @hit_by_bullet
 		initialize_end(:hit_by_enemy) if @player.exploded && !@hit_by_bullet
 		initialize_end(:too_many_intruders) if @galaxy_hp == 0
-		@scene = :boss_1 if @level == 1 && @enemy_intruders + @enemies_destroyed >= @max_enemies
+		# @scene = :boss_warning if @level == 1 && @enemy_intruders + @enemies_destroyed >= @max_enemies
 		############################# Collision detection for enemies and player ###############################
 		@enemies.each do |enemy|
 			distance = Gosu.distance(enemy.x, enemy.y, @player.x, @player.y)
@@ -412,8 +463,8 @@ class GalaxyInvaders < Gosu::Window
 			button_down_game(id)
 		when :level_up
 			button_down_level_up(id)
-		when :boss_1
-			button_down_boss_1(id)
+		when :boss_warning
+			button_down_boss_warning(id)
 		when :end
 			button_down_end(id)
 		end
@@ -423,14 +474,17 @@ class GalaxyInvaders < Gosu::Window
 		initialize_game
 	end
 
-	def button_down_boss_1(id)
+	def button_down_boss_warning(id)
 		if id == Gosu::KbP
-			@scene = :level_up
+			@scene = :boss_1
+			@start_music.play(true)
 		end
 	end
 
 	def button_down_level_up(id)
-		if id == Gosu::KbP
+		if id == Gosu::KbP && @level == 1
+			initialize_warning
+		elsif	id == Gosu::KbP
 			@level += 1
 			@max_enemies += 5
 			@enemy_frequency += 0.002
