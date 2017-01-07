@@ -3,7 +3,7 @@ class Boss_1
 
 	def initialize(window, player)
 		@radius = 75
-		@x = rand(window.width - 2 * @radius) + @radius
+		@x = window.width / 2
 		@y = 0
 		@image = Gosu::Image.new('images/boss_1.png')
 		@speed = 1
@@ -12,7 +12,7 @@ class Boss_1
 
 	def move
 		if @y < 90
-			@y += 1
+			@y += 0.5
 		end
 		@direction = Gosu.angle(@x, @y, @player.x, @player.y)
 		@x += Gosu.offset_x(@direction, @speed)

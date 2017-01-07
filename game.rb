@@ -182,9 +182,19 @@ class GalaxyInvaders < Gosu::Window
 		@missiles.each do |missile|
 			missile.draw
 		end
+		@enemy_bullets.each do |enemy_bullet|
+			enemy_bullet.draw
+		end
 		@explosions.each do |explosion|
 			explosion.draw           
 		end
+		if (@enemies[0].x - @player.x).abs < 60
+			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 15), (@enemies[0].y + 45), 180, @level)
+			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 15), (@enemies[0].y + 45), 180, @level)			
+			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 40), (@enemies[0].y + 30), 180, @level)
+			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 40), (@enemies[0].y + 30), 180, @level)
+			@enemy_shooting_sound.play(0.3)
+		end 
 		######################################### Labels for display ##########################################
 		@font.draw("HP", 5, 14, 2)
 		@font.draw("FF", 5, 35, 2)
@@ -225,6 +235,9 @@ class GalaxyInvaders < Gosu::Window
 		end
 		@missiles.each do |missile|
 			missile.move
+		end
+		@enemy_bullets.each do |enemy_bullet|
+			enemy_bullet.move
 		end
 		@bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
