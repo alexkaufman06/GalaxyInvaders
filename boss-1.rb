@@ -1,5 +1,5 @@
 class Boss_1
-	attr_reader :x, :y, :radius
+	attr_reader :x, :y, :radius, :hp
 
 	def initialize(window, player)
 		@radius = 75
@@ -8,14 +8,24 @@ class Boss_1
 		@image = Gosu::Image.new('images/boss_1.png')
 		@speed = 1
 		@player = player
+		@hp = 30
 	end
 
 	def move
 		if @y < 90
 			@y += 0.5
+		elsif
+			@direction = Gosu.angle(@x, @y, @player.x, @player.y)
+			@x += Gosu.offset_x(@direction, @speed)
 		end
-		@direction = Gosu.angle(@x, @y, @player.x, @player.y)
-		@x += Gosu.offset_x(@direction, @speed)
+	end
+
+	def hit_by_bullet
+		@hp -= 1
+	end
+
+	def hit_by_missile
+		@hp -= 3
 	end
 
 	def draw

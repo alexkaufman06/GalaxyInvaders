@@ -81,7 +81,9 @@ class GalaxyInvaders < Gosu::Window
 		@scene = :boss_warning
 		@warning_sound = Gosu::Song.new('sounds/warning.wav')
 		@boss_1_sound = Gosu::Song.new('sounds/boss-loop.wav')
+		@boss_fired = Time.now 
 		@enemies.push Boss_1.new(self, @player)
+		@boss_1 = @enemies[0]
 		@warning_sound.play(true)
 	end
 
@@ -187,13 +189,6 @@ class GalaxyInvaders < Gosu::Window
 		end
 		@explosions.each do |explosion|
 			explosion.draw           
-		end
-		if (@enemies[0].x - @player.x).abs < 60
-			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 15), (@enemies[0].y + 45), 180, @level)
-			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 15), (@enemies[0].y + 45), 180, @level)			
-			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 40), (@enemies[0].y + 30), 180, @level)
-			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 40), (@enemies[0].y + 30), 180, @level)
-			@enemy_shooting_sound.play(0.3)
 		end 
 		######################################### Labels for display ##########################################
 		@font.draw("HP", 5, 14, 2)
@@ -229,7 +224,7 @@ class GalaxyInvaders < Gosu::Window
 		@player.move
 		@enemies.each do |enemy|
 			enemy.move
-		end  
+		end
 		@bullets.each do |bullet|
 			bullet.move
 		end
@@ -248,7 +243,94 @@ class GalaxyInvaders < Gosu::Window
 		@enemy_bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
 		end
-				################################# Logic for machine gun and shot gun ##################################
+		########################################## Randomized enemies ##########################################
+		if rand < 0.008
+			@enemies.push Enemy.new(self, @level)
+			@enemies_appeared += 1
+		end
+		##################################### Boss shooting logic below ########################################
+		if (@enemies[0].x - @player.x).abs < 60 && (Time.now - @boss_fired) >= 0.75
+		############################# Remove Timing logic above for Lazer Logic ################################
+			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 15), (@enemies[0].y + 45), 180, @level)
+			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 15), (@enemies[0].y + 45), 180, @level)			
+			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 40), (@enemies[0].y + 30), 180, @level)
+			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 40), (@enemies[0].y + 30), 180, @level)
+			@enemy_shooting_sound.play(0.3)
+			@boss_fired = Time.now
+		end
+		############################### Collision detection for boss and bullets ###############################
+			@bullets.dup.each do |bullet|
+				distance = Gosu.distance(@boss_1.x, @boss_1.y, bullet.x, bullet.y)
+				if distance < @boss_1.radius + bullet.radius
+					@boss_1.hit_by_bullet
+					@bullets.delete bullet
+					@explosions.push Explosion.new(self, bullet.x, bullet.y)
+					@explosion_sound.play
+				end
+			end
+		############################# Collision detection for enemies and bullets ###############################
+		@enemies.dup.each do |enemy|
+			@bullets.dup.each do |bullet|
+				distance = Gosu.distance(enemy.x, enemy.y, bullet.x, bullet.y)
+				if distance < enemy.radius + bullet.radius
+					@enemies.delete enemy
+					@bullets.delete bullet
+					@explosions.push Explosion.new(self, enemy.x, enemy.y)
+					@enemies_destroyed += 1
+					@total_enemies_destroyed += 1
+					@money += 10
+					@explosion_sound.play
+				end 
+			end
+		end
+		############################# Collision detection for boss and missiles ##############################
+		@missiles.dup.each do |missile|
+			distance = Gosu.distance(@boss_1.x, @boss_1.y, missile.x, missile.y)
+			if distance < @boss_1.radius + missile.radius
+				@boss_1.hit_by_missile
+				@missiles.delete missile
+				@explosions.push Explosion.new(self, @boss_1.x, @boss_1.y)
+				@explosion_sound.play
+			end 
+		end
+		############################# Collision detection for enemies and missiles ##############################
+		@enemies.dup.each do |enemy|
+			@missiles.dup.each do |missile|
+				distance = Gosu.distance(enemy.x, enemy.y, missile.x, missile.y)
+				if distance < enemy.radius + missile.radius
+					@enemies.delete enemy
+					@missiles.delete missile
+					@explosions.push Explosion.new(self, enemy.x, enemy.y)
+					@enemies_destroyed += 1
+					@total_enemies_destroyed += 1
+					@money += 10
+					@explosion_sound.play
+				end 
+			end
+		end
+		############################## Remove explosions, enemies, and bullets #################################
+		@explosions.dup.each do |explosion|
+			@explosions.delete explosion if explosion.finished
+		end
+		@enemies.dup.each do|enemy|
+			if enemy.y > HEIGHT + enemy.radius
+				@enemies.delete enemy
+				@enemy_intruders += 1;
+				@galaxy_hp -= 10;                
+				@intruder_alert_color = Gosu::Color::RED
+				@intruder_sound.play
+			end
+		end
+		@bullets.dup.each do |bullet|
+			@bullets.delete bullet unless bullet.onscreen?
+		end		
+		@missiles.dup.each do |missile|
+			@missiles.delete missile unless missile.onscreen?
+		end
+		@enemy_bullets.dup.each do |bullet|
+			@bullets.delete bullet unless bullet.onscreen?
+		end
+		################################# Logic for machine gun and shot gun ##################################
 		#Highest fire rate = 0.04
 		if button_down?(Gosu::KbSpace) && (Time.now - @bullet_fired) >= @fire_rate
 			if @shotgun == 10 && (Time.now - @shotgun_fired) >= 1.5
@@ -348,7 +430,18 @@ class GalaxyInvaders < Gosu::Window
 			@missiles.push Missile.new(self, @player.x, @player.y, @player.angle, @enemies)
 			@missile_sound.play
 		end
-		
+		@enemies.each do |enemy|
+			if rand < 0.005 && enemy != @enemies[0]
+				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, 180, @level)
+				@enemy_shooting_sound.play(0.3)
+			end
+		end
+		########################################## Scene transitions ###########################################
+		if @boss_1.hp <= 0
+			@level += 1
+			@money += 300
+			@scene = :level_up
+		end
 		initialize_end(:off_top) if @player.y < @player.radius
 	end
 
@@ -629,7 +722,7 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def button_down_level_up(id)
-		if id == Gosu::KbP && @level == 1
+		if id == Gosu::KbP && @level == 5
 			initialize_warning
 		elsif	id == Gosu::KbP
 			@level += 1
