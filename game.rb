@@ -1,6 +1,7 @@
 require 'gosu'
 require_relative 'player'
 require_relative 'enemy'
+require_relative 'boss-1'
 require_relative 'bullet'
 require_relative 'missile'
 require_relative 'enemy-bullet'
@@ -80,6 +81,7 @@ class GalaxyInvaders < Gosu::Window
 		@scene = :boss_warning
 		@warning_sound = Gosu::Song.new('sounds/warning.wav')
 		@boss_1_sound = Gosu::Song.new('sounds/boss-loop.wav')
+		@enemies.push Boss_1.new(self, @player)
 		@warning_sound.play(true)
 	end
 
@@ -171,6 +173,18 @@ class GalaxyInvaders < Gosu::Window
 		@start_music.stop
 		@boss_1_sound.play(true)
 		@player.draw
+		@enemies.each do |enemy|
+			enemy.draw
+		end  
+		@bullets.each do |bullet|
+			bullet.draw
+		end
+		@missiles.each do |missile|
+			missile.draw
+		end
+		@explosions.each do |explosion|
+			explosion.draw           
+		end
 		######################################### Labels for display ##########################################
 		@font.draw("HP", 5, 14, 2)
 		@font.draw("FF", 5, 35, 2)
@@ -203,6 +217,126 @@ class GalaxyInvaders < Gosu::Window
 		####################### Move player, seconds played, and intruder color for flash ######################
 		@seconds_played = (Time.now - START_TIME).to_i
 		@player.move
+		@enemies.each do |enemy|
+			enemy.move
+		end  
+		@bullets.each do |bullet|
+			bullet.move
+		end
+		@missiles.each do |missile|
+			missile.move
+		end
+		@bullets.dup.each do |bullet|
+			@bullets.delete bullet unless bullet.onscreen?
+		end		
+		@missiles.dup.each do |missile|
+			@missiles.delete missile unless missile.onscreen?
+		end
+		@enemy_bullets.dup.each do |bullet|
+			@bullets.delete bullet unless bullet.onscreen?
+		end
+				################################# Logic for machine gun and shot gun ##################################
+		#Highest fire rate = 0.04
+		if button_down?(Gosu::KbSpace) && (Time.now - @bullet_fired) >= @fire_rate
+			if @shotgun == 10 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@shotgun_sound.play
+			elsif @shotgun == 20 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
+			elsif @shotgun == 30 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
+			elsif @shotgun == 40 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
+			elsif @shotgun == 50 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
+			elsif @shotgun == 60 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
+			elsif @shotgun == 70 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 20))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
+			elsif @shotgun == 80 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 20))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 20))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
+			elsif @shotgun == 90 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 25))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 20))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 20))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
+			elsif @shotgun == 100 && (Time.now - @shotgun_fired) >= 1.5
+				@shotgun_fired = Time.now
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 25))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 25))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 20))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 20))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 15))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 10))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle + 5))
+				@bullets.push Bullet.new(self, @player.x, @player.y, (@player.angle - 5))
+				@shotgun_sound.play
+			end
+		####################################### Logic for machine gun  ########################################
+			@bullet_fired = Time.now  
+			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
+			@shooting_sound.play(0.3)
+		end
+		##################################### Logic for homing missiles  ######################################
+		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= (2 - (@missile / 100)) && @enemies.count != 0 && @missile != 0
+			@missile_fired = Time.now
+			@missiles.push Missile.new(self, @player.x, @player.y, @player.angle, @enemies)
+			@missile_sound.play
+		end
+		
+		initialize_end(:off_top) if @player.y < @player.radius
 	end
 
 	def update_boss_warning
