@@ -179,11 +179,136 @@ class GalaxyInvaders < Gosu::Window
 		@start_music.stop
 		@large_font.draw("Boss Destroyed", 200, 45, 1,1,1, Gosu::Color::RED)
 		@font.draw("Press P to continue playing", 275, 250, 1,1,1, Gosu::Color::GREEN)
+		@hand_image.draw(mouse_x - 11, mouse_y - 13, 1)
+		@font.draw("Money: $#{@money}", 350, 350, 2)
 		@warning_sound.play(true)
+		if Gosu.distance(mouse_x, mouse_y, 230, 435) < 20
+			@repair_hp_color = Gosu::Color::GREEN
+		else
+			@repair_hp_color = @white
+		end
+
+		if Gosu.distance(mouse_x, mouse_y, 230, 480) < 20
+			@repair_ff_color = Gosu::Color::GREEN
+		else
+			@repair_ff_color = @white
+		end
+
+		if Gosu.distance(mouse_x, mouse_y, 660, 435) < 20
+			@upgrade_mg_color = Gosu::Color::GREEN
+		else
+			@upgrade_mg_color = @white
+		end
+
+		if Gosu.distance(mouse_x, mouse_y, 660, 477) < 20
+			@upgrade_sg_color = Gosu::Color::GREEN
+		else
+			@upgrade_sg_color = @white
+		end
+
+		if Gosu.distance(mouse_x, mouse_y, 660, 519) < 20
+			@upgrade_hm_color = Gosu::Color::GREEN
+		else
+			@upgrade_hm_color = @white
+		end
+
+		if @galaxy_hp > 60
+			@health_color = Gosu::Color::GREEN
+		elsif @galaxy_hp > 30
+			@health_color = Gosu::Color::YELLOW
+		else
+			@health_color = Gosu::Color::RED
+		end
+
+		if @machine_gun > 60
+			@machine_gun_color = Gosu::Color::GREEN
+		elsif @machine_gun > 30
+			@machine_gun_color = Gosu::Color::YELLOW
+		else
+			@machine_gun_color = Gosu::Color::RED
+		end
+
+		if @shotgun > 60
+			@shotgun_color = Gosu::Color::GREEN
+		elsif @shotgun > 30
+			@shotgun_color = Gosu::Color::YELLOW
+		else
+			@shotgun_color = Gosu::Color::RED
+		end
+
+		if @missile > 60
+			@missile_color = Gosu::Color::GREEN
+		elsif @missile > 30
+			@missile_color = Gosu::Color::YELLOW
+		else
+			@missile_color = Gosu::Color::RED
+		end
+
+		draw_line(0,400,@white,800,400,@white)
+
+		@font.draw("HP", 50, 413, 2)
+		if @galaxy_hp < 100 && @money >= 20
+			@font.draw("REPAIR", 200, 414, 1, 1, 1, @repair_hp_color)
+		end
+		draw_quad(85, 420, @health_color, 85 + @galaxy_hp, 420, @health_color, 85 + @galaxy_hp, 430, @health_color, 85, 430, @health_color)
+		draw_line(85,420,@white,185,420,@white)
+		draw_line(185,420,@white,185,430,@white)
+		draw_line(185,430,@white,85,430,@white)
+		draw_line(85,430,@white,85,420,@white)
+
+		@font.draw("FF", 50, 455, 2)
+		if @shield_hp < 100 && @money >= 20
+			@font.draw("REPAIR", 200, 455, 1, 1, 1, @repair_ff_color)
+		end
+		draw_quad(85, 460, @shield_color, 85 + @shield_hp, 460, @shield_color, 85 + @shield_hp, 470, @shield_color, 85, 470, @shield_color)
+		draw_line(85,460,@white,185,460,@white)
+		draw_line(185,460,@white,185,470,@white)
+		draw_line(185,470,@white,85,470,@white)
+		draw_line(85,470,@white,85,460,@white)
+
+		@font.draw("Machine Gun", 360, 413, 2)
+		if @machine_gun < 100 && @money >= 100 + (2.5 * @machine_gun)
+			@font.draw("Upgrade", 620, 413, 1, 1, 1, @upgrade_mg_color)
+			@font.draw("$#{(@machine_gun * 2.5) + 100}", 710, 413, 1, 1, 1, @upgrade_mg_color)
+		elsif @machine_gun < 100 && @money < 100 + (2.5 * @machine_gun)
+			@font.draw("$#{(@machine_gun * 2.5) + 100}", 620, 413, 1, 1, 1, Gosu::Color::RED)
+		end
+		draw_quad(500, 420, @machine_gun_color, 500 + @machine_gun, 420, @machine_gun_color, 500 + @machine_gun, 430, @machine_gun_color, 500, 430, @machine_gun_color)
+		draw_line(500, 420,@white,600,420,@white)
+		draw_line(600, 420,@white,600,430,@white)
+		draw_line(600, 430,@white,500,430,@white)
+		draw_line(500, 430,@white,500,420,@white)
+
+		@font.draw("Shotgun", 360, 455, 2)
+		if @shotgun < 100 && @money >= 150 + (2.5 * @shotgun)
+			@font.draw("Upgrade", 620, 455, 1, 1, 1, @upgrade_sg_color)
+			@font.draw("$#{(@shotgun * 2.5 + 150)}", 710, 455, 1, 1, 1, @upgrade_sg_color)
+		elsif @shotgun < 100 && @money < 150 + (2.5 * @shotgun)
+			@font.draw("$#{(@shotgun * 2.5) + 150}", 620, 455, 1, 1, 1, Gosu::Color::RED)
+		end
+		draw_quad(500, 462, @shotgun_color, 500 + @shotgun, 462, @shotgun_color, 500 + @shotgun, 472, @shotgun_color, 500, 472, @shotgun_color)
+		draw_line(500, 462, @white, 600, 462, @white)
+		draw_line(600, 462, @white, 600, 472, @white)
+		draw_line(600, 472, @white, 500, 472, @white)
+		draw_line(500, 472, @white, 500, 462, @white)
+
+		@font.draw("Homing Missile", 360, 497, 2)
+		if @missile < 100 && @money >= 200 + (2.5 * @missile)
+			@font.draw("Upgrade", 620, 497, 1, 1, 1, @upgrade_hm_color)
+			@font.draw("$#{@missile * 2.5 + 200}", 710, 497, 1, 1, 1, @upgrade_hm_color)
+		elsif @shotgun < 100 && @money < 200 + (2.5 * @missile)
+			@font.draw("$#{@missile * 2.5 + 200}", 620, 497, 1, 1, 1, Gosu::Color::RED)
+		end
+		draw_quad(500, 504, @missile_color, 500 + @missile, 504, @missile_color, 500 + @missile, 514, @missile_color, 500, 514, @missile_color)
+		draw_line(500, 504, @white, 600, 504, @white)
+		draw_line(600, 504, @white, 600, 514, @white)
+		draw_line(600, 514, @white, 500, 514, @white)
+		draw_line(500, 514, @white, 500, 504, @white)
 	end
 
 	def draw_boss_1
 		@start_music.stop
+		draw_quad(0, 0, @intruder_alert_color, 800, 0, @intruder_alert_color, 800, 600, @intruder_alert_color, 0, 600, @intruder_alert_color)
 		@boss_1_sound.play(true)
 		@player.draw
 		@enemies.each do |enemy|
@@ -485,7 +610,6 @@ class GalaxyInvaders < Gosu::Window
 		end
 		########################################## Scene transitions ###########################################
 		if @boss_1.hp <= 0
-			@level += 1
 			@money += 300
 			@scene = :boss_1_killed
 		end
@@ -772,9 +896,53 @@ class GalaxyInvaders < Gosu::Window
 
 	def button_down_boss_1_killed(id)
 		if id == Gosu::KbP
-			@scene = :level_up
 			@start_music.play(true)
+			@level += 1
+			@max_enemies += 5
+			@enemy_frequency += 0.002
+			initialize_game
 		end
+
+		if (id == Gosu::MsLeft) && @galaxy_hp != 100 && @money >= 20
+			if Gosu.distance(mouse_x, mouse_y, 230, 435) < 20
+				@galaxy_hp += 10
+				@money -= 20
+				@cash_register_sound.play
+			end
+		end
+
+		if (id == Gosu::MsLeft) && @shield_hp != 100 && @money >= 20
+			if Gosu.distance(mouse_x, mouse_y, 230, 480) < 20
+				@shield_hp += 10
+				@money -= 20
+				@cash_register_sound.play
+			end
+		end
+
+		if (id == Gosu::MsLeft) && @machine_gun != 100 && @money >= 100 + (2.5 * @machine_gun)
+			if Gosu.distance(mouse_x, mouse_y, 660, 435) < 20
+				@money -= 100 + (2.5 * @machine_gun)
+				@machine_gun += 10
+				@fire_rate -= 0.046
+				@cash_register_sound.play 
+			end
+		end
+
+		if (id == Gosu::MsLeft) && @shot_gun != 100 && @money >= 150 + (2.5 * @shotgun)
+			if Gosu.distance(mouse_x, mouse_y, 660, 477) < 20
+				@money -= 150 + (2.5 * @shotgun)
+				@shotgun += 10
+				@cash_register_sound.play
+			end
+		end
+
+		if (id == Gosu::MsLeft) && @missile != 100 && @money >= 200 + (2.5 * @missile)
+			if Gosu.distance(mouse_x, mouse_y, 660, 519) < 20
+				@money -= 200 + (2.5 * @missile)
+				@missile += 10
+				@cash_register_sound.play
+			end
+		end	
 	end
 
 	def button_down_boss_warning(id)

@@ -6,9 +6,9 @@ class Boss_1
 		@x = window.width / 2
 		@y = 0
 		@image = Gosu::Image.new('images/boss_1.png')
-		@speed = 1
+		@speed = 1.5
 		@player = player
-		@hp = 30
+		@hp = 50
 	end
 
 	def move
