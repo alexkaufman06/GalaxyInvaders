@@ -97,6 +97,8 @@ class GalaxyInvaders < Gosu::Window
 			draw_level_up
 		when :boss_warning
 			draw_boss_warning
+		when :boss_1_killed
+			draw_boss_1_killed
 		when :boss_1
 			draw_boss_1
 		when :end
@@ -157,6 +159,8 @@ class GalaxyInvaders < Gosu::Window
 			update_game
 		when :boss_warning
 			update_boss_warning
+		when :boss_1_killed
+			update_boss_1_killed
 		when :boss_1
 			update_boss_1
 		when :end
@@ -167,6 +171,13 @@ class GalaxyInvaders < Gosu::Window
 	def draw_boss_warning
 		@start_music.stop
 		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
+		@font.draw("Press P to continue playing", 275, 250, 1,1,1, Gosu::Color::GREEN)
+		@warning_sound.play(true)
+	end
+
+	def draw_boss_1_killed
+		@start_music.stop
+		@large_font.draw("Boss Destroyed", 200, 45, 1,1,1, Gosu::Color::RED)
 		@font.draw("Press P to continue playing", 275, 250, 1,1,1, Gosu::Color::GREEN)
 		@warning_sound.play(true)
 	end
@@ -330,6 +341,42 @@ class GalaxyInvaders < Gosu::Window
 		@enemy_bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
 		end
+		############################# Collision detection for enemies and player ###############################
+		@enemies.each do |enemy|
+			distance = Gosu.distance(enemy.x, enemy.y, @player.x, @player.y)
+			if distance < @player.radius + enemy.radius && @shield_hp > 0 && enemy == @boss_1
+				initialize_end(:crash_into_boss)
+			elsif distance < @player.radius + enemy.radius && @shield_hp > 0
+				@enemies.delete enemy
+				@explosions.push Explosion.new(self, enemy.x, enemy.y)
+				@explosion_sound.play
+				@total_enemies_destroyed += 1
+				@enemies_destroyed += 1
+				@money += 10
+				@shield_hp -= 10
+			elsif distance < @player.radius + enemy.radius
+				@explosions.push Explosion.new(self, @player.x, @player.y)
+				@explosion_sound.play
+				@player.explode
+			end
+		end
+		########################### Collision detection for player and enemy bullets ############################
+		@enemy_bullets.dup.each do |enemy_bullet|
+			distance = Gosu.distance(enemy_bullet.x, enemy_bullet.y, @player.x, @player.y)
+			if distance < enemy_bullet.radius + @player.radius && @shield_hp > 0
+				@enemy_bullets.delete enemy_bullet
+				@explosions.push Explosion.new(self, enemy_bullet.x, enemy_bullet.y)
+				@explosion_sound.play
+				@shield_hp -= 10
+			elsif distance < enemy_bullet.radius + @player.radius
+				@explosions.push Explosion.new(self, @player.x, @player.y)
+				@enemy_bullets.delete enemy_bullet
+				@explosion_sound.play
+				@total_enemies_destroyed += 1
+				@player.explode
+				@hit_by_bullet = true
+			end
+		end
 		################################# Logic for machine gun and shot gun ##################################
 		#Highest fire rate = 0.04
 		if button_down?(Gosu::KbSpace) && (Time.now - @bullet_fired) >= @fire_rate
@@ -440,12 +487,19 @@ class GalaxyInvaders < Gosu::Window
 		if @boss_1.hp <= 0
 			@level += 1
 			@money += 300
-			@scene = :level_up
+			@scene = :boss_1_killed
 		end
+		initialize_end(:hit_by_bullet) if @player.exploded && @hit_by_bullet
+		initialize_end(:hit_by_enemy) if @player.exploded && !@hit_by_bullet
+		initialize_end(:too_many_intruders) if @galaxy_hp == 0
 		initialize_end(:off_top) if @player.y < @player.radius
 	end
 
 	def update_boss_warning
+
+	end
+
+	def update_boss_1_killed
 
 	end
 
@@ -705,6 +759,8 @@ class GalaxyInvaders < Gosu::Window
 			button_down_level_up(id)
 		when :boss_warning
 			button_down_boss_warning(id)
+		when :boss_1_killed
+			button_down_boss_1_killed(id)
 		when :end
 			button_down_end(id)
 		end
@@ -712,6 +768,13 @@ class GalaxyInvaders < Gosu::Window
 
 	def button_down_start(id)
 		initialize_game
+	end
+
+	def button_down_boss_1_killed(id)
+		if id == Gosu::KbP
+			@scene = :level_up
+			@start_music.play(true)
+		end
 	end
 
 	def button_down_boss_warning(id)
@@ -931,6 +994,10 @@ class GalaxyInvaders < Gosu::Window
 			@message = "You got too close to the enemy mother ship at level #{@level}."
 			@message2 = "Before your ship was destroyed, "
 			@message2 += "you took out #{@total_enemies_destroyed} enemy ships."
+		when :crash_into_boss
+		@message = "You got too close to the boss ship at level #{@level}."
+		@message2 = "Before your ship was destroyed, "
+		@message2 += "you took out #{@total_enemies_destroyed} enemy ships."
 		end
 		@bottom_message = "Press P to play again, or Q to quit."
 		@message_font = Gosu::Font.new(25)
