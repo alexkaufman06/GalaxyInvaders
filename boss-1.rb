@@ -1,13 +1,14 @@
 class Boss_1
-	attr_reader :x, :y, :radius, :hp
+	attr_reader :x, :y, :radius, :hp, :exploded
 
 	def initialize(window, player)
 		@radius = 75
 		@x = window.width / 2
 		@y = 0
 		@image = Gosu::Image.new('images/boss_1.png')
-		@speed = 1.5
+		@speed = 2
 		@player = player
+		@exploded = false
 		@hp = 50
 	end
 
@@ -30,5 +31,9 @@ class Boss_1
 
 	def draw
 		@image.draw(@x - @radius, @y - @radius, 1)
+	end
+
+	def explode
+		@exploded = true
 	end
 end

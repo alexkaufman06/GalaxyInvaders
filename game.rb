@@ -345,6 +345,7 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def update_boss_1
+		@intruder_alert_color = Gosu::Color::NONE
 		@player.turn_left if button_down?(Gosu::KbLeft)
 		@player.turn_right if button_down?(Gosu::KbRight)
 		if button_down?(Gosu::KbUp)
@@ -385,7 +386,7 @@ class GalaxyInvaders < Gosu::Window
 			@enemies_appeared += 1
 		end
 		##################################### Boss shooting logic below ########################################
-		if (@enemies[0].x - @player.x).abs < 60 && (Time.now - @boss_fired) >= 0.75
+		if (@enemies[0].x - @player.x).abs < 60 && (Time.now - @boss_fired) >= 0.75 && @boss_1.exploded == false
 		############################# Remove Timing logic above for Lazer Logic ################################
 			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 15), (@enemies[0].y + 45), 180, @level)
 			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 15), (@enemies[0].y + 45), 180, @level)			
@@ -394,16 +395,32 @@ class GalaxyInvaders < Gosu::Window
 			@enemy_shooting_sound.play(0.3)
 			@boss_fired = Time.now
 		end
+		if @boss_1.exploded
+			sleep(1)
+			@money += 300
+			@scene = :boss_1_killed
+		end
 		############################### Collision detection for boss and bullets ###############################
-			@bullets.dup.each do |bullet|
-				distance = Gosu.distance(@boss_1.x, @boss_1.y, bullet.x, bullet.y)
-				if distance < @boss_1.radius + bullet.radius
-					@boss_1.hit_by_bullet
-					@bullets.delete bullet
-					@explosions.push Explosion.new(self, bullet.x, bullet.y)
-					@explosion_sound.play
-				end
+		@bullets.dup.each do |bullet|
+			distance = Gosu.distance(@boss_1.x, @boss_1.y, bullet.x, bullet.y)
+			if distance < @boss_1.radius + bullet.radius && @boss_1.hp == 1
+				@boss_1.explode
+				@enemies.delete @boss_1
+				@bullets.delete bullet
+				@explosions.push Explosion.new(self, bullet.x, bullet.y)
+				@explosion_sound.play
+				@explosions.push Explosion.new(self, @boss_1.x, @boss_1.y)
+				@explosions.push Explosion.new(self, @boss_1.x + 35, @boss_1.y)
+				@explosions.push Explosion.new(self, @boss_1.x - 35, @boss_1.y)
+				@explosions.push Explosion.new(self, @boss_1.x, @boss_1.y + 35)
+				@explosions.push Explosion.new(self, @boss_1.x, @boss_1.y - 35)
+			elsif distance < @boss_1.radius + bullet.radius
+				@boss_1.hit_by_bullet
+				@bullets.delete bullet
+				@explosions.push Explosion.new(self, bullet.x, bullet.y)
+				@explosion_sound.play
 			end
+		end
 		############################# Collision detection for enemies and bullets ###############################
 		@enemies.dup.each do |enemy|
 			@bullets.dup.each do |bullet|
@@ -412,9 +429,8 @@ class GalaxyInvaders < Gosu::Window
 					@enemies.delete enemy
 					@bullets.delete bullet
 					@explosions.push Explosion.new(self, enemy.x, enemy.y)
-					@enemies_destroyed += 1
 					@total_enemies_destroyed += 1
-					@money += 10
+					@money += 5
 					@explosion_sound.play
 				end 
 			end
@@ -469,7 +485,7 @@ class GalaxyInvaders < Gosu::Window
 		############################# Collision detection for enemies and player ###############################
 		@enemies.each do |enemy|
 			distance = Gosu.distance(enemy.x, enemy.y, @player.x, @player.y)
-			if distance < @player.radius + enemy.radius && @shield_hp > 0 && enemy == @boss_1
+			if distance < @player.radius + enemy.radius && enemy == @boss_1
 				initialize_end(:crash_into_boss)
 			elsif distance < @player.radius + enemy.radius && @shield_hp > 0
 				@enemies.delete enemy
@@ -609,10 +625,6 @@ class GalaxyInvaders < Gosu::Window
 			end
 		end
 		########################################## Scene transitions ###########################################
-		if @boss_1.hp <= 0
-			@money += 300
-			@scene = :boss_1_killed
-		end
 		initialize_end(:hit_by_bullet) if @player.exploded && @hit_by_bullet
 		initialize_end(:hit_by_enemy) if @player.exploded && !@hit_by_bullet
 		initialize_end(:too_many_intruders) if @galaxy_hp == 0
@@ -953,6 +965,7 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def button_down_level_up(id)
+		##### Boss level below ######
 		if id == Gosu::KbP && @level == 5
 			initialize_warning
 		elsif	id == Gosu::KbP
