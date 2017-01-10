@@ -438,7 +438,18 @@ class GalaxyInvaders < Gosu::Window
 		############################# Collision detection for boss and missiles ##############################
 		@missiles.dup.each do |missile|
 			distance = Gosu.distance(@boss_1.x, @boss_1.y, missile.x, missile.y)
-			if distance < @boss_1.radius + missile.radius
+			if distance < @boss_1.radius + missile.radius && @boss_1.hp <= 3
+				@boss_1.explode
+				@enemies.delete @boss_1
+				@missiles.delete missile
+				@explosions.push Explosion.new(self, missile.x, missile.y)
+				@explosion_sound.play
+				@explosions.push Explosion.new(self, @boss_1.x, @boss_1.y)
+				@explosions.push Explosion.new(self, @boss_1.x + 35, @boss_1.y)
+				@explosions.push Explosion.new(self, @boss_1.x - 35, @boss_1.y)
+				@explosions.push Explosion.new(self, @boss_1.x, @boss_1.y + 35)
+				@explosions.push Explosion.new(self, @boss_1.x, @boss_1.y - 35)
+			elsif distance < @boss_1.radius + missile.radius
 				@boss_1.hit_by_missile
 				@missiles.delete missile
 				@explosions.push Explosion.new(self, @boss_1.x, @boss_1.y)
