@@ -1,6 +1,7 @@
 require 'gosu'
 require_relative 'player'
 require_relative 'enemy'
+require_relative 'hunter'
 require_relative 'boss-1'
 require_relative 'bullet'
 require_relative 'missile'
@@ -669,6 +670,10 @@ class GalaxyInvaders < Gosu::Window
 		########################################## Randomized enemies ##########################################
 		if rand < @enemy_frequency && @max_enemies > @enemies_appeared
 			@enemies.push Enemy.new(self, @level)
+			@enemies_appeared += 1
+		end
+		if rand < 0.01 && @max_enemies > @enemies_appeared && @level > 5
+			@enemies.push Hunter.new(self, @level, @player)
 			@enemies_appeared += 1
 		end
 		####################################### Move enemies and bullets #######################################

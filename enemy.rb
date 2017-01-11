@@ -16,8 +16,4 @@ class Enemy
 	def draw
 		@image.draw(@x - @radius, @y - @radius, 1)
 	end
-
-	def increase_speed
-		@speed += 15
-	end
 end
