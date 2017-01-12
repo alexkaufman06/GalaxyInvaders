@@ -17,7 +17,7 @@ class GalaxyInvaders < Gosu::Window
 	def initialize
 		super(WIDTH, HEIGHT)
 		self.caption = 'Galaxy Invaders'
-		@background_image = Gosu::Image.new('images/start.png')
+		@background_image = Gosu::Image.new('images/start_screen.png')
 		@hand_image = Gosu::Image.new('images/hand.png')
 		@scene = :start
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
