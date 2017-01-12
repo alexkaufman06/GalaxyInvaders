@@ -1,5 +1,5 @@
 class Enemy
-	attr_reader :x, :y, :radius, :speed
+	attr_reader :x, :y, :radius, :speed, :type
 
 	def initialize(window, level)
 		@radius = 20
@@ -7,6 +7,7 @@ class Enemy
 		@y = 0
 		@image = Gosu::Image.new('images/enemy.png')
 		@speed = 1 + (level / 6)
+		@type = "Drone"
 	end
 
 	def move

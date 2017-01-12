@@ -387,7 +387,7 @@ class GalaxyInvaders < Gosu::Window
 			@enemies_appeared += 1
 		end
 		##################################### Boss shooting logic below ########################################
-		if (@enemies[0].x - @player.x).abs < 60 && (Time.now - @boss_fired) >= 0.75 && @boss_1.exploded == false
+		if @boss_1.exploded == false && (@enemies[0].x - @player.x).abs < 60 && (Time.now - @boss_fired) >= 0.75
 		############################# Remove Timing logic above for Lazer Logic ################################
 			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 15), (@enemies[0].y + 45), 180, @level)
 			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 15), (@enemies[0].y + 45), 180, @level)			
@@ -883,14 +883,17 @@ class GalaxyInvaders < Gosu::Window
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 			@shooting_sound.play(0.3)
 		end
-
+		######################################## Logic for enemy fire #########################################
 		@enemies.each do |enemy|
-			if @level > 2 && rand < 0.003
+			if @level > 5 && rand < 0.003 && enemy.type == "Hunter"
+				@direction = Gosu.angle(enemy.x, enemy.y, @player.x, @player.y)
+				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, @direction, @level)
+				@enemy_shooting_sound.play(0.3)
+			elsif @level > 2 && rand < 0.003
 				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, 180, @level)
 				@enemy_shooting_sound.play(0.3)
 			end
 		end
-
 		##################################### Logic for homing missiles  ######################################
 		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= (2 - (@missile / 100)) && @enemies.count != 0 && @missile != 0
 			@missile_fired = Time.now

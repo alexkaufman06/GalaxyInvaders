@@ -1,5 +1,5 @@
 class Hunter
-	attr_reader :x, :y, :radius, :speed
+	attr_reader :x, :y, :radius, :speed, :type
 
 	def initialize(window, level, player)
 		@radius = 20
@@ -8,6 +8,7 @@ class Hunter
 		@image = Gosu::Image.new('images/hunter.png')
 		@speed = 1 + (level / 6)
 		@player = player
+		@type = "Hunter"
 	end
 
 	def move
