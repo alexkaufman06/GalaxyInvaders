@@ -33,6 +33,7 @@ class GalaxyInvaders < Gosu::Window
 		@total_enemies_destroyed = 0
 		@enemy_frequency = 0.01
 		@font = Gosu::Font.new(20)
+		@medium_font = Gosu::Font.new(35)
 		@large_font = Gosu::Font.new(60)
 		@white = Gosu::Color::WHITE
 	end
@@ -172,16 +173,16 @@ class GalaxyInvaders < Gosu::Window
 	def draw_boss_warning
 		@start_music.stop
 		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
-		@font.draw("Press P to continue playing", 275, 250, 1,1,1, Gosu::Color::GREEN)
+		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
 		@warning_sound.play(true)
 	end
 
 	def draw_boss_1_killed
 		@start_music.stop
 		@large_font.draw("Boss Destroyed", 200, 45, 1,1,1, Gosu::Color::RED)
-		@font.draw("Press P to continue playing", 275, 250, 1,1,1, Gosu::Color::GREEN)
+		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
 		@hand_image.draw(mouse_x - 11, mouse_y - 13, 1)
-		@font.draw("Money: $#{@money}", 350, 350, 2)
+		@font.draw("Money: $#{@money}", 335, 355, 2)
 		@warning_sound.play(true)
 		if Gosu.distance(mouse_x, mouse_y, 230, 435) < 20
 			@repair_hp_color = Gosu::Color::GREEN
@@ -1074,9 +1075,9 @@ class GalaxyInvaders < Gosu::Window
 		@large_font.draw("You completed level " + @level.to_s, 120, 45, 2)
 		@font.draw("You destroyed " + @enemies_destroyed.to_s + " enemy ships", 250, 110, 2)
 		@font.draw(@enemy_intruders.to_s + " enemies invaded your galaxy", 250, 135, 2)
-		@font.draw("Press P to continue playing", 275, 250, 1,1,1, Gosu::Color::GREEN)
+		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
 		@hand_image.draw(mouse_x - 11, mouse_y - 13, 1)
-		@font.draw("Money: $#{@money}", 350, 350, 2)
+		@font.draw("Money: $#{@money}", 335, 355, 2)
 
 		if @galaxy_hp > 60
 			@health_color = Gosu::Color::GREEN
@@ -1171,8 +1172,21 @@ class GalaxyInvaders < Gosu::Window
 		draw_line(600, 514, @white, 500, 514, @white)
 		draw_line(500, 514, @white, 500, 504, @white)	
 
-		if @level == 2
-			@font.draw("Watch out! Enemies can now shoot at you.",225,200,1,1,1,Gosu::Color::RED)
+		if @level == 1
+			@font.draw("Nice job taking out those malfunctioning drones!",200,210,1,1,1,Gosu::Color::RED)	
+			@font.draw("There appears to be a glitch in their firing mechanisms.",170,230,1,1,1,Gosu::Color::RED)	
+		elsif @level == 2
+			@font.draw("Looks like the drone's firing glitch has been fixed.",200,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("PREPARE FOR ENEMY FIRE!",270,230,1,1,1,Gosu::Color::RED)
+		elsif @level == 3
+			@font.draw("Your skills are continuing to improve!",240,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("More drones are on the way.",280,230,1,1,1,Gosu::Color::RED)
+		elsif @level == 4
+			@font.draw("The drones are growing in number and increasing their speeds.",150,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("TAKE THEM DOWN!",310,230,1,1,1,Gosu::Color::RED)
+		elsif @level == 5
+			@font.draw("Another wave of drones are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("There appears to be a large ship joinig them...",215,230,1,1,1,Gosu::Color::RED)
 		end
 	end
 
