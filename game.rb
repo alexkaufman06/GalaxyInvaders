@@ -174,6 +174,8 @@ class GalaxyInvaders < Gosu::Window
 		@start_music.stop
 		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
 		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
+		@font.draw("Xeno, Private First Class of the robots, is headed your way!",175,210,1,1,1,Gosu::Color::RED)			
+		@font.draw("PREPARE FOR BATTLE!",265,230,1,1,1,Gosu::Color::RED)
 		@warning_sound.play(true)
 	end
 
@@ -182,6 +184,8 @@ class GalaxyInvaders < Gosu::Window
 		@large_font.draw("Boss Destroyed", 200, 45, 1,1,1, Gosu::Color::RED)
 		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
 		@hand_image.draw(mouse_x - 11, mouse_y - 13, 1)
+		@font.draw("Xeno, Private First Class of the robots, has been destroyed!",175,210,1,1,1,Gosu::Color::RED)			
+		@font.draw("Zardor is upset with the news and has sent hunters to track you down, be careful!",100,230,1,1,1,Gosu::Color::RED)
 		@font.draw("Money: $#{@money}", 335, 355, 2)
 		@warning_sound.play(true)
 		if Gosu.distance(mouse_x, mouse_y, 230, 435) < 20
@@ -1176,7 +1180,7 @@ class GalaxyInvaders < Gosu::Window
 			@font.draw("Nice job taking out those malfunctioning drones!",200,210,1,1,1,Gosu::Color::RED)	
 			@font.draw("There appears to be a glitch in their firing mechanisms.",170,230,1,1,1,Gosu::Color::RED)	
 		elsif @level == 2
-			@font.draw("Looks like the drone's firing glitch has been fixed.",200,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Looks like the drone firing glitch has been fixed.",200,210,1,1,1,Gosu::Color::RED)			
 			@font.draw("PREPARE FOR ENEMY FIRE!",270,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 3
 			@font.draw("Your skills are continuing to improve!",240,210,1,1,1,Gosu::Color::RED)			
@@ -1186,7 +1190,10 @@ class GalaxyInvaders < Gosu::Window
 			@font.draw("TAKE THEM DOWN!",310,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 5
 			@font.draw("Another wave of drones are on the way.",250,210,1,1,1,Gosu::Color::RED)			
-			@font.draw("There appears to be a large ship joinig them...",215,230,1,1,1,Gosu::Color::RED)
+			@font.draw("There appears to be a large ship joining them...",215,230,1,1,1,Gosu::Color::RED)
+		# elsif @level == 6
+		# 	@font.draw("Another wave of drones are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+		# 	@font.draw("There appears to be a large ship joinig them...",215,230,1,1,1,Gosu::Color::RED)
 		end
 	end
 
