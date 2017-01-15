@@ -1191,9 +1191,9 @@ class GalaxyInvaders < Gosu::Window
 		elsif @level == 5
 			@font.draw("Another wave of drones are on the way.",250,210,1,1,1,Gosu::Color::RED)			
 			@font.draw("There appears to be a large ship joining them...",215,230,1,1,1,Gosu::Color::RED)
-		# elsif @level == 6
-		# 	@font.draw("Another wave of drones are on the way.",250,210,1,1,1,Gosu::Color::RED)			
-		# 	@font.draw("There appears to be a large ship joinig them...",215,230,1,1,1,Gosu::Color::RED)
+		elsif @level == 6
+			@font.draw("More drones and hunters are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("TAKE THEM DOWN!",310,230,1,1,1,Gosu::Color::RED)
 		end
 	end
 
