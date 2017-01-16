@@ -86,6 +86,7 @@ class GalaxyInvaders < Gosu::Window
 		@boss_fired = Time.now 
 		@enemies.push Boss_1.new(self, @player)
 		@boss_1 = @enemies[0]
+		@start_music.play(false)
 		@warning_sound.play(true)
 	end
 
@@ -890,11 +891,11 @@ class GalaxyInvaders < Gosu::Window
 		end
 		######################################## Logic for enemy fire #########################################
 		@enemies.each do |enemy|
-			if @level > 5 && rand < 0.003 && enemy.type == "Hunter"
+			if @level > 6 && rand < 0.003 && enemy.type == "Hunter"
 				@direction = Gosu.angle(enemy.x, enemy.y, @player.x, @player.y)
 				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, @direction, @level)
 				@enemy_shooting_sound.play(0.3)
-			elsif @level > 2 && rand < 0.003
+			elsif @level > 2 && rand < 0.003 && enemy.type == "Drone"
 				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, 180, @level)
 				@enemy_shooting_sound.play(0.3)
 			end
@@ -1193,7 +1194,10 @@ class GalaxyInvaders < Gosu::Window
 			@font.draw("There appears to be a large ship joining them...",215,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 6
 			@font.draw("More drones and hunters are on the way.",250,210,1,1,1,Gosu::Color::RED)			
-			@font.draw("TAKE THEM DOWN!",310,230,1,1,1,Gosu::Color::RED)
+			@font.draw("There appears to be a glitch in the hunter firing mechanisms.",170,230,1,1,1,Gosu::Color::RED)
+		elsif @level == 7
+			@font.draw("More drones and hunters are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Looks like the hunter firing glitch has been fixed.",200,230,1,1,1,Gosu::Color::RED)
 		end
 	end
 
