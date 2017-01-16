@@ -175,8 +175,8 @@ class GalaxyInvaders < Gosu::Window
 		@start_music.stop
 		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
 		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
-		@font.draw("Xeno, Private First Class of the robots, is headed your way!",175,210,1,1,1,Gosu::Color::RED)			
-		@font.draw("PREPARE FOR BATTLE!",265,230,1,1,1,Gosu::Color::RED)
+		@font.draw("Xeno, Private First Class of the robots, is headed your way!",165,210,1,1,1,Gosu::Color::RED)			
+		@font.draw("PREPARE FOR BATTLE!",280,230,1,1,1,Gosu::Color::RED)
 		@warning_sound.play(true)
 	end
 
@@ -186,7 +186,7 @@ class GalaxyInvaders < Gosu::Window
 		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
 		@hand_image.draw(mouse_x - 11, mouse_y - 13, 1)
 		@font.draw("Xeno, Private First Class of the robots, has been destroyed!",175,210,1,1,1,Gosu::Color::RED)			
-		@font.draw("Zardor is upset with the news and has sent hunters to track you down, be careful!",100,230,1,1,1,Gosu::Color::RED)
+		@font.draw("Zardor is upset with the news and has sent hunters to track you down, be careful!",90,230,1,1,1,Gosu::Color::RED)
 		@font.draw("Money: $#{@money}", 335, 355, 2)
 		@warning_sound.play(true)
 		if Gosu.distance(mouse_x, mouse_y, 230, 435) < 20
@@ -891,7 +891,7 @@ class GalaxyInvaders < Gosu::Window
 		end
 		######################################## Logic for enemy fire #########################################
 		@enemies.each do |enemy|
-			if @level > 6 && rand < 0.003 && enemy.type == "Hunter"
+			if @level > 7 && rand < 0.003 && enemy.type == "Hunter"
 				@direction = Gosu.angle(enemy.x, enemy.y, @player.x, @player.y)
 				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, @direction, @level)
 				@enemy_shooting_sound.play(0.3)
@@ -1198,6 +1198,15 @@ class GalaxyInvaders < Gosu::Window
 		elsif @level == 7
 			@font.draw("More drones and hunters are on the way.",250,210,1,1,1,Gosu::Color::RED)			
 			@font.draw("Looks like the hunter firing glitch has been fixed.",200,230,1,1,1,Gosu::Color::RED)
+		elsif @level == 8
+			@font.draw("The enemies are growing in number and increasing their speeds.",150,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("TAKE THEM DOWN!",310,230,1,1,1,Gosu::Color::RED)
+		elsif @level == 9
+			@font.draw("Your skills are continuing to improve!",240,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("More enemies are on the way.",280,230,1,1,1,Gosu::Color::RED)
+		elsif @level == 10
+			@font.draw("Another wave of enemies are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Our radar systems appear to be jammed...",249,230,1,1,1,Gosu::Color::RED)
 		end
 	end
 
