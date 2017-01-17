@@ -40,6 +40,7 @@ class GalaxyInvaders < Gosu::Window
 
 	def initialize_game
 		@player = Player.new(self)
+		@background_game_image = Gosu::Image.new('images/background.png')
 		@enemies = []
 		@bullets = []
 		@enemy_bullets = []
@@ -114,6 +115,7 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def draw_game
+		@background_game_image.draw(0,0,0)
 		############################# Covers screen when attacked and draws player #############################
 		draw_quad(0, 0, @intruder_alert_color, 800, 0, @intruder_alert_color, 800, 600, @intruder_alert_color, 0, 600, @intruder_alert_color)
 		@player.draw
