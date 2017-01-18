@@ -633,7 +633,7 @@ class GalaxyInvaders < Gosu::Window
 			@shooting_sound.play(0.3)
 		end
 		##################################### Logic for homing missiles  ######################################
-		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= (2 - (@missile / 100)) && @enemies.count != 0 && @missile != 0
+		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= (2 - (@missile / 100)) && @missile != 0
 			@missile_fired = Time.now
 			@missiles.push Missile.new(self, @player.x, @player.y, @player.angle, @enemies)
 			@missile_sound.play
@@ -903,7 +903,7 @@ class GalaxyInvaders < Gosu::Window
 			end
 		end
 		##################################### Logic for homing missiles  ######################################
-		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= (2 - (@missile / 100)) && @enemies.count != 0 && @missile != 0
+		if button_down?(Gosu::KbSpace) && (Time.now - @missile_fired) >= (2 - (@missile / 100)) && @missile != 0
 			@missile_fired = Time.now
 			@missiles.push Missile.new(self, @player.x, @player.y, @player.angle, @enemies)
 			@missile_sound.play
