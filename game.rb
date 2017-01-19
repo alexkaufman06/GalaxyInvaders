@@ -2,6 +2,7 @@ require 'gosu'
 require_relative 'player'
 require_relative 'enemy'
 require_relative 'hunter'
+require_relative 'tank'
 require_relative 'boss-1'
 require_relative 'bullet'
 require_relative 'missile'
@@ -689,6 +690,10 @@ class GalaxyInvaders < Gosu::Window
 			@enemies.push Hunter.new(self, @level, @player)
 			@enemies_appeared += 1
 		end
+		if rand < 0.004 && @max_enemies > @enemies_appeared && @level > 10
+			@enemies.push Tank.new(self, @level, @player)
+			@enemies_appeared += 1
+		end
 		####################################### Move enemies and bullets #######################################
 		@enemies.each do |enemy|
 			enemy.move
@@ -706,7 +711,20 @@ class GalaxyInvaders < Gosu::Window
 		@enemies.dup.each do |enemy|
 			@bullets.dup.each do |bullet|
 				distance = Gosu.distance(enemy.x, enemy.y, bullet.x, bullet.y)
-				if distance < enemy.radius + bullet.radius
+				if distance < enemy.radius + bullet.radius && enemy.type == "Tank" && enemy.hp == 1
+					@enemies.delete enemy
+					@bullets.delete bullet
+					@explosions.push Explosion.new(self, enemy.x, enemy.y)
+					@enemies_destroyed += 1
+					@total_enemies_destroyed += 1
+					@money += 10
+					@explosion_sound.play
+				elsif distance < enemy.radius + bullet.radius && enemy.type == "Tank"
+					enemy.hit_by_bullet
+					@bullets.delete bullet
+					@explosions.push Explosion.new(self, enemy.x, enemy.y)
+					@explosion_sound.play         
+				elsif	distance < enemy.radius + bullet.radius
 					@enemies.delete enemy
 					@bullets.delete bullet
 					@explosions.push Explosion.new(self, enemy.x, enemy.y)
@@ -721,7 +739,20 @@ class GalaxyInvaders < Gosu::Window
 		@enemies.dup.each do |enemy|
 			@missiles.dup.each do |missile|
 				distance = Gosu.distance(enemy.x, enemy.y, missile.x, missile.y)
-				if distance < enemy.radius + missile.radius
+				if distance < enemy.radius + missile.radius && enemy.type == "Tank" && enemy.hp <= 3
+					@enemies.delete enemy
+					@missiles.delete missile
+					@explosions.push Explosion.new(self, enemy.x, enemy.y)
+					@enemies_destroyed += 1
+					@total_enemies_destroyed += 1
+					@money += 10
+					@explosion_sound.play
+				elsif distance < enemy.radius + missile.radius && enemy.type == "Tank"
+					enemy.hit_by_missile
+					@missiles.delete missile
+					@explosions.push Explosion.new(self, enemy.x, enemy.y)
+					@explosion_sound.play
+				elsif distance < enemy.radius + missile.radius
 					@enemies.delete enemy
 					@missiles.delete missile
 					@explosions.push Explosion.new(self, enemy.x, enemy.y)
@@ -898,7 +929,11 @@ class GalaxyInvaders < Gosu::Window
 		end
 		######################################## Logic for enemy fire #########################################
 		@enemies.each do |enemy|
-			if @level > 7 && rand < 0.003 && enemy.type == "Hunter"
+			if rand < 0.001 && enemy.type == "Tank"
+				@direction = Gosu.angle(enemy.x, enemy.y, @player.x, @player.y)
+				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, @direction, @level)
+				@enemy_shooting_sound.play(0.3)
+			elsif @level > 7 && rand < 0.003 && enemy.type == "Hunter"
 				@direction = Gosu.angle(enemy.x, enemy.y, @player.x, @player.y)
 				@enemy_bullets.push Enemy_Bullet.new(self, enemy.x, enemy.y, @direction, @level)
 				@enemy_shooting_sound.play(0.3)
