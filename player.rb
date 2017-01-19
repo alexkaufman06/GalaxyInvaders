@@ -8,7 +8,7 @@ class Player
 		@x = 200
 		@y = 500
 		@angle = 0
-		@image = Gosu::Image.new('images/ship.png')
+		@image = Gosu::Image.new('images/spaceship.png')
 		@velocity_x = 0
 		@velocity_y = 0
 		@exploded = false

@@ -84,7 +84,11 @@ class GalaxyInvaders < Gosu::Window
 		@scene = :boss_warning
 		@warning_sound = Gosu::Song.new('sounds/warning.wav')
 		@boss_1_sound = Gosu::Song.new('sounds/boss-loop.wav')
-		@boss_fired = Time.now 
+		@boss_fired = Time.now
+		@bullets = []
+		@enemy_bullets = []
+		@missiles = []
+		@explosions = []
 		@enemies.push Boss_1.new(self, @player)
 		@boss_1 = @enemies[0]
 		@start_music.play(false)
@@ -316,6 +320,7 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def draw_boss_1
+		@background_game_image.draw(0,0,0)
 		@start_music.stop
 		draw_quad(0, 0, @intruder_alert_color, 800, 0, @intruder_alert_color, 800, 600, @intruder_alert_color, 0, 600, @intruder_alert_color)
 		@boss_1_sound.play(true)
