@@ -1249,6 +1249,9 @@ class GalaxyInvaders < Gosu::Window
 		elsif @level == 10
 			@font.draw("Another wave of enemies are on the way.",250,210,1,1,1,Gosu::Color::RED)			
 			@font.draw("Our radar systems appear to be jammed...",249,230,1,1,1,Gosu::Color::RED)
+		elsif @level == 11
+			@font.draw("Another wave of enemies are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Watch out for more heavily armored tanks aviator!",240,230,1,1,1,Gosu::Color::RED)
 		end
 	end
 
