@@ -29,7 +29,7 @@ class GalaxyInvaders < Gosu::Window
 		@shotgun = 0
 		@missile = 0
 		@fire_rate = 0.5
-		@money = 0
+		@money = 100000
 		@max_enemies = 10
 		@total_enemies_destroyed = 0
 		@enemy_frequency = 0.01
@@ -96,6 +96,16 @@ class GalaxyInvaders < Gosu::Window
 		@warning_sound.play(true)
 	end
 
+	def initialize_warning_2
+		@scene = :boss_warning_2
+		@bullets = []
+		@enemy_bullets = []
+		@missiles = []
+		@explosions = []
+		@start_music.play(false)
+		@warning_sound.play(true)
+	end
+
 	def draw
 		case @scene
 		when :start
@@ -106,6 +116,8 @@ class GalaxyInvaders < Gosu::Window
 			draw_level_up
 		when :boss_warning
 			draw_boss_warning
+		when :boss_warning_2
+			draw_boss_warning_2
 		when :boss_1_killed
 			draw_boss_1_killed
 		when :boss_1
@@ -183,6 +195,15 @@ class GalaxyInvaders < Gosu::Window
 		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
 		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
 		@font.draw("Xeno, Private First Class of the robots, is headed your way!",165,210,1,1,1,Gosu::Color::RED)			
+		@font.draw("PREPARE FOR BATTLE!",280,230,1,1,1,Gosu::Color::RED)
+		@warning_sound.play(true)
+	end
+
+	def draw_boss_warning_2
+		@start_music.stop
+		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
+		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
+		@font.draw("Fariz, the Captain of the robots, is headed your way!",165,210,1,1,1,Gosu::Color::RED)			
 		@font.draw("PREPARE FOR BATTLE!",280,230,1,1,1,Gosu::Color::RED)
 		@warning_sound.play(true)
 	end
@@ -962,6 +983,8 @@ class GalaxyInvaders < Gosu::Window
 			button_down_level_up(id)
 		when :boss_warning
 			button_down_boss_warning(id)
+		when :boss_warning_2
+			button_down_boss_warning(id)
 		when :boss_1_killed
 			button_down_boss_1_killed(id)
 		when :end
@@ -1025,9 +1048,15 @@ class GalaxyInvaders < Gosu::Window
 	end
 
 	def button_down_boss_warning(id)
-		if id == Gosu::KbP
+		if id == Gosu::KbP && @level == 5
 			@scene = :boss_1
 			@start_music.play(true)
+		elsif id == Gosu::KbP && @level == 10
+			#Boss 2 logic for scene transition will go here
+			@level += 1
+			@max_enemies += 5
+			@enemy_frequency += 0.002
+			initialize_game
 		end
 	end
 
@@ -1035,6 +1064,8 @@ class GalaxyInvaders < Gosu::Window
 		##### Boss level below ######
 		if id == Gosu::KbP && @level == 5
 			initialize_warning
+		elsif id == Gosu::KbP && @level == 10
+			initialize_warning_2
 		elsif	id == Gosu::KbP
 			@level += 1
 			@max_enemies += 5
