@@ -4,6 +4,7 @@ require_relative 'enemy'
 require_relative 'hunter'
 require_relative 'tank'
 require_relative 'boss-1'
+require_relative 'boss-2'
 require_relative 'bullet'
 require_relative 'missile'
 require_relative 'enemy-bullet'
@@ -29,7 +30,7 @@ class GalaxyInvaders < Gosu::Window
 		@shotgun = 0
 		@missile = 0
 		@fire_rate = 0.5
-		@money = 100000
+		@money = 0
 		@max_enemies = 10
 		@total_enemies_destroyed = 0
 		@enemy_frequency = 0.01
