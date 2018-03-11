@@ -1,15 +1,5 @@
 require 'gosu'
-require_relative 'player'
-require_relative 'enemy'
-require_relative 'hunter'
-require_relative 'tank'
-require_relative 'boss-1'
-require_relative 'boss-2'
-require_relative 'bullet'
-require_relative 'missile'
-require_relative 'enemy-bullet'
-require_relative 'explosion'
-require_relative 'credit'
+Dir["*.rb"].each {|file| require_relative file }
 
 class GalaxyInvaders < Gosu::Window
 	WIDTH = 800
