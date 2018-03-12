@@ -1,5 +1,9 @@
 require 'gosu'
-Dir["*.rb"].each {|file| require_relative file }
+Dir["*.rb"].each {|file|
+	if file != 'game.rb'
+		require_relative file
+	end
+}
 
 class GalaxyInvaders < Gosu::Window
 	WIDTH = 800
@@ -58,7 +62,7 @@ class GalaxyInvaders < Gosu::Window
 		@seconds_played = 0
 		@bullet_fired = Time.now
 		@shotgun_fired = Time.now
-		@missile_fired = Time.now                           
+		@missile_fired = Time.now
 		#################################### Sounds and background music #######################################
 		@game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
 		@start_music.play(true)
@@ -130,7 +134,7 @@ class GalaxyInvaders < Gosu::Window
 		################################## Draw Enemy, Bullets and Explosions ##################################
 		@enemies.each do |enemy|
 			enemy.draw
-		end         
+		end
 		@bullets.each do |bullet|
 			bullet.draw
 		end
@@ -138,7 +142,7 @@ class GalaxyInvaders < Gosu::Window
 			missile.draw
 		end
 		@explosions.each do |explosion|
-			explosion.draw           
+			explosion.draw
 		end
 		@enemy_bullets.each do |bullet|
 			bullet.draw
@@ -185,7 +189,7 @@ class GalaxyInvaders < Gosu::Window
 		@start_music.stop
 		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
 		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
-		@font.draw("Xeno, Private First Class of the robots, is headed your way!",165,210,1,1,1,Gosu::Color::RED)			
+		@font.draw("Xeno, Private First Class of the robots, is headed your way!",165,210,1,1,1,Gosu::Color::RED)
 		@font.draw("PREPARE FOR BATTLE!",280,230,1,1,1,Gosu::Color::RED)
 		@warning_sound.play(true)
 	end
@@ -194,7 +198,7 @@ class GalaxyInvaders < Gosu::Window
 		@start_music.stop
 		@large_font.draw("Boss Incoming", 200, 45, 1,1,1, Gosu::Color::RED)
 		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
-		@font.draw("Fariz, the Captain of the robots, is headed your way!",165,210,1,1,1,Gosu::Color::RED)			
+		@font.draw("Fariz, the Captain of the robots, is headed your way!",165,210,1,1,1,Gosu::Color::RED)
 		@font.draw("PREPARE FOR BATTLE!",280,230,1,1,1,Gosu::Color::RED)
 		@warning_sound.play(true)
 	end
@@ -204,7 +208,7 @@ class GalaxyInvaders < Gosu::Window
 		@large_font.draw("Boss Destroyed", 200, 45, 1,1,1, Gosu::Color::RED)
 		@medium_font.draw("Press P to continue playing", 200, 310, 1,1,1, Gosu::Color::GREEN)
 		@hand_image.draw(mouse_x - 11, mouse_y - 13, 1)
-		@font.draw("Xeno, Private First Class of the robots, has been destroyed!",175,210,1,1,1,Gosu::Color::RED)			
+		@font.draw("Xeno, Private First Class of the robots, has been destroyed!",175,210,1,1,1,Gosu::Color::RED)
 		@font.draw("Zardor is upset with the news and has sent hunters to track you down, be careful!",90,230,1,1,1,Gosu::Color::RED)
 		@font.draw("Money: $#{@money}", 335, 355, 2)
 		@warning_sound.play(true)
@@ -340,7 +344,7 @@ class GalaxyInvaders < Gosu::Window
 		@player.draw
 		@enemies.each do |enemy|
 			enemy.draw
-		end  
+		end
 		@bullets.each do |bullet|
 			bullet.draw
 		end
@@ -351,8 +355,8 @@ class GalaxyInvaders < Gosu::Window
 			enemy_bullet.draw
 		end
 		@explosions.each do |explosion|
-			explosion.draw           
-		end 
+			explosion.draw
+		end
 		######################################### Labels for display ##########################################
 		@font.draw("HP", 5, 14, 2)
 		@font.draw("FF", 5, 35, 2)
@@ -400,7 +404,7 @@ class GalaxyInvaders < Gosu::Window
 		end
 		@bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
-		end		
+		end
 		@missiles.dup.each do |missile|
 			@missiles.delete missile unless missile.onscreen?
 		end
@@ -416,7 +420,7 @@ class GalaxyInvaders < Gosu::Window
 		if @boss_1.exploded == false && (@enemies[0].x - @player.x).abs < 60 && (Time.now - @boss_fired) >= 0.75
 		############################# Remove Timing logic above for Lazer Logic ################################
 			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 15), (@enemies[0].y + 45), 180, @level)
-			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 15), (@enemies[0].y + 45), 180, @level)			
+			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 15), (@enemies[0].y + 45), 180, @level)
 			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x + 40), (@enemies[0].y + 30), 180, @level)
 			@enemy_bullets.push Enemy_Bullet.new(self, (@enemies[0].x - 40), (@enemies[0].y + 30), 180, @level)
 			@enemy_shooting_sound.play(0.3)
@@ -459,7 +463,7 @@ class GalaxyInvaders < Gosu::Window
 					@total_enemies_destroyed += 1
 					@money += 5
 					@explosion_sound.play
-				end 
+				end
 			end
 		end
 		############################# Collision detection for boss and missiles ##############################
@@ -481,7 +485,7 @@ class GalaxyInvaders < Gosu::Window
 				@missiles.delete missile
 				@explosions.push Explosion.new(self, @boss_1.x, @boss_1.y)
 				@explosion_sound.play
-			end 
+			end
 		end
 		############################# Collision detection for enemies and missiles ##############################
 		@enemies.dup.each do |enemy|
@@ -495,7 +499,7 @@ class GalaxyInvaders < Gosu::Window
 					@total_enemies_destroyed += 1
 					@money += 10
 					@explosion_sound.play
-				end 
+				end
 			end
 		end
 		############################## Remove explosions, enemies, and bullets #################################
@@ -506,14 +510,14 @@ class GalaxyInvaders < Gosu::Window
 			if enemy.y > HEIGHT + enemy.radius
 				@enemies.delete enemy
 				@enemy_intruders += 1;
-				@galaxy_hp -= 10;                
+				@galaxy_hp -= 10;
 				@intruder_alert_color = Gosu::Color::RED
 				@intruder_sound.play
 			end
 		end
 		@bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
-		end		
+		end
 		@missiles.dup.each do |missile|
 			@missiles.delete missile unless missile.onscreen?
 		end
@@ -646,7 +650,7 @@ class GalaxyInvaders < Gosu::Window
 				@shotgun_sound.play
 			end
 		####################################### Logic for machine gun  ########################################
-			@bullet_fired = Time.now  
+			@bullet_fired = Time.now
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 			@shooting_sound.play(0.3)
 		end
@@ -735,7 +739,7 @@ class GalaxyInvaders < Gosu::Window
 					enemy.hit_by_bullet
 					@bullets.delete bullet
 					@explosions.push Explosion.new(self, enemy.x, enemy.y)
-					@explosion_sound.play         
+					@explosion_sound.play
 				elsif	distance < enemy.radius + bullet.radius
 					@enemies.delete enemy
 					@bullets.delete bullet
@@ -744,9 +748,9 @@ class GalaxyInvaders < Gosu::Window
 					@total_enemies_destroyed += 1
 					@money += 10
 					@explosion_sound.play
-				end 
+				end
 			end
-		end  	
+		end
 		############################# Collision detection for enemies and missiles ##############################
 		@enemies.dup.each do |enemy|
 			@missiles.dup.each do |missile|
@@ -772,7 +776,7 @@ class GalaxyInvaders < Gosu::Window
 					@total_enemies_destroyed += 1
 					@money += 10
 					@explosion_sound.play
-				end 
+				end
 			end
 		end
 		############################## Remove explosions, enemies, and bullets #################################
@@ -783,20 +787,20 @@ class GalaxyInvaders < Gosu::Window
 			if enemy.y > HEIGHT + enemy.radius
 				@enemies.delete enemy
 				@enemy_intruders += 1;
-				@galaxy_hp -= 10;                
+				@galaxy_hp -= 10;
 				@intruder_alert_color = Gosu::Color::RED
 				@intruder_sound.play
 			end
 		end
 		@bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
-		end		
+		end
 		@missiles.dup.each do |missile|
 			@missiles.delete missile unless missile.onscreen?
 		end
 		@enemy_bullets.dup.each do |bullet|
 			@bullets.delete bullet unless bullet.onscreen?
-		end		
+		end
 		####################################### Colors for HP/FF Display #######################################
 		if @galaxy_hp > 60
 			@health_color = Gosu::Color::GREEN
@@ -804,7 +808,7 @@ class GalaxyInvaders < Gosu::Window
 			@health_color = Gosu::Color::YELLOW
 		else
 			@health_color = Gosu::Color::RED
-		end	
+		end
 		########################################## Scene transitions ###########################################
 		@scene = :level_up if @enemy_intruders + @enemies_destroyed >= @max_enemies
 		initialize_end(:hit_by_bullet) if @player.exploded && @hit_by_bullet
@@ -935,7 +939,7 @@ class GalaxyInvaders < Gosu::Window
 				@shotgun_sound.play
 			end
 		####################################### Logic for machine gun  ########################################
-			@bullet_fired = Time.now  
+			@bullet_fired = Time.now
 			@bullets.push Bullet.new(self, @player.x, @player.y, @player.angle)
 			@shooting_sound.play(0.3)
 		end
@@ -960,7 +964,7 @@ class GalaxyInvaders < Gosu::Window
 			@missiles.push Missile.new(self, @player.x, @player.y, @player.angle, @enemies)
 			@missile_sound.play
 		end
-		
+
 		initialize_end(:off_top) if @player.y < @player.radius
 	end
 
@@ -1017,7 +1021,7 @@ class GalaxyInvaders < Gosu::Window
 				@money -= 100 + (2.5 * @machine_gun)
 				@machine_gun += 10
 				@fire_rate -= 0.046
-				@cash_register_sound.play 
+				@cash_register_sound.play
 			end
 		end
 
@@ -1035,7 +1039,7 @@ class GalaxyInvaders < Gosu::Window
 				@missile += 10
 				@cash_register_sound.play
 			end
-		end	
+		end
 	end
 
 	def button_down_boss_warning(id)
@@ -1085,7 +1089,7 @@ class GalaxyInvaders < Gosu::Window
 				@money -= 100 + (2.5 * @machine_gun)
 				@machine_gun += 10
 				@fire_rate -= 0.046
-				@cash_register_sound.play 
+				@cash_register_sound.play
 			end
 		end
 
@@ -1103,7 +1107,7 @@ class GalaxyInvaders < Gosu::Window
 				@missile += 10
 				@cash_register_sound.play
 			end
-		end	
+		end
 	end
 
 	def button_down_game(id)
@@ -1239,40 +1243,40 @@ class GalaxyInvaders < Gosu::Window
 		draw_line(500, 504, @white, 600, 504, @white)
 		draw_line(600, 504, @white, 600, 514, @white)
 		draw_line(600, 514, @white, 500, 514, @white)
-		draw_line(500, 514, @white, 500, 504, @white)	
+		draw_line(500, 514, @white, 500, 504, @white)
 
 		if @level == 1
-			@font.draw("Nice job taking out those malfunctioning drones!",200,210,1,1,1,Gosu::Color::RED)	
-			@font.draw("There appears to be a glitch in their firing mechanisms.",170,230,1,1,1,Gosu::Color::RED)	
+			@font.draw("Nice job taking out those malfunctioning drones!",200,210,1,1,1,Gosu::Color::RED)
+			@font.draw("There appears to be a glitch in their firing mechanisms.",170,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 2
-			@font.draw("Looks like the drone firing glitch has been fixed.",200,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Looks like the drone firing glitch has been fixed.",200,210,1,1,1,Gosu::Color::RED)
 			@font.draw("PREPARE FOR ENEMY FIRE!",270,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 3
-			@font.draw("Your skills are continuing to improve!",240,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Your skills are continuing to improve!",240,210,1,1,1,Gosu::Color::RED)
 			@font.draw("More drones are on the way.",280,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 4
-			@font.draw("The drones are growing in number and increasing their speeds.",150,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("The drones are growing in number and increasing their speeds.",150,210,1,1,1,Gosu::Color::RED)
 			@font.draw("TAKE THEM DOWN!",310,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 5
-			@font.draw("Another wave of drones are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Another wave of drones are on the way.",250,210,1,1,1,Gosu::Color::RED)
 			@font.draw("There appears to be a large ship joining them...",215,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 6
-			@font.draw("More drones and hunters are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("More drones and hunters are on the way.",250,210,1,1,1,Gosu::Color::RED)
 			@font.draw("There appears to be a glitch in the hunter firing mechanisms.",170,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 7
-			@font.draw("More drones and hunters are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("More drones and hunters are on the way.",250,210,1,1,1,Gosu::Color::RED)
 			@font.draw("Looks like the hunter firing glitch has been fixed.",200,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 8
-			@font.draw("The enemies are growing in number and increasing their speeds.",150,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("The enemies are growing in number and increasing their speeds.",150,210,1,1,1,Gosu::Color::RED)
 			@font.draw("TAKE THEM DOWN!",310,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 9
-			@font.draw("Your skills are continuing to improve!",240,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Your skills are continuing to improve!",240,210,1,1,1,Gosu::Color::RED)
 			@font.draw("More enemies are on the way.",280,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 10
-			@font.draw("Another wave of enemies are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Another wave of enemies are on the way.",250,210,1,1,1,Gosu::Color::RED)
 			@font.draw("Our radar systems appear to be jammed...",249,230,1,1,1,Gosu::Color::RED)
 		elsif @level == 11
-			@font.draw("Another wave of enemies are on the way.",250,210,1,1,1,Gosu::Color::RED)			
+			@font.draw("Another wave of enemies are on the way.",250,210,1,1,1,Gosu::Color::RED)
 			@font.draw("Watch out for more heavily armored tanks aviator!",240,230,1,1,1,Gosu::Color::RED)
 		end
 	end
