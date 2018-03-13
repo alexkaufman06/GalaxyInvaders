@@ -20,10 +20,10 @@ class GalaxyInvaders < Gosu::Window
 		@level = 10
 		@shield_hp = 100
 		@galaxy_hp = 100
-		@machine_gun = 10
-		@shotgun = 10
-		@missile = 10
-		@fire_rate = 0.1 #0.5
+		@machine_gun = 0
+		@shotgun = 0
+		@missile = 0
+		@fire_rate = 0.5
 		@money = 0
 		@max_enemies = 10
 		@total_enemies_destroyed = 0
