@@ -17,13 +17,13 @@ class GalaxyInvaders < Gosu::Window
 		@hand_image = Gosu::Image.new('images/hand.png')
 		@scene = :start
 		@start_music = Gosu::Song.new('sounds/Lost Frontier.ogg')
-		@level = 1
+		@level = 10
 		@shield_hp = 100
 		@galaxy_hp = 100
-		@machine_gun = 0
-		@shotgun = 0
-		@missile = 0
-		@fire_rate = 0.5
+		@machine_gun = 10
+		@shotgun = 10
+		@missile = 10
+		@fire_rate = 0.1 #0.5
 		@money = 0
 		@max_enemies = 10
 		@total_enemies_destroyed = 0
@@ -93,10 +93,15 @@ class GalaxyInvaders < Gosu::Window
 
 	def initialize_warning_2
 		@scene = :boss_warning_2
+		@warning_sound = Gosu::Song.new('sounds/warning.wav')
+		@boss_1_sound = Gosu::Song.new('sounds/boss-loop.wav')
+		@boss_fired = Time.now
 		@bullets = []
 		@enemy_bullets = []
 		@missiles = []
 		@explosions = []
+		@enemies.push Boss_2.new(self, @player)
+		@boss_2 = @enemies[0]
 		@start_music.play(false)
 		@warning_sound.play(true)
 	end
@@ -671,6 +676,49 @@ class GalaxyInvaders < Gosu::Window
 		initialize_end(:hit_by_enemy) if @player.exploded && !@hit_by_bullet
 		initialize_end(:too_many_intruders) if @galaxy_hp == 0
 		initialize_end(:off_top) if @player.y < @player.radius
+	end
+
+	def draw_boss_2
+		@background_game_image.draw(0,0,0)
+		@start_music.stop
+		draw_quad(0, 0, @intruder_alert_color, 800, 0, @intruder_alert_color, 800, 600, @intruder_alert_color, 0, 600, @intruder_alert_color)
+		@boss_1_sound.play(true)
+		@player.draw
+		@enemies.each do |enemy|
+			enemy.draw
+		end
+		@bullets.each do |bullet|
+			bullet.draw
+		end
+		@missiles.each do |missile|
+			missile.draw
+		end
+		@enemy_bullets.each do |enemy_bullet|
+			enemy_bullet.draw
+		end
+		@explosions.each do |explosion|
+			explosion.draw
+		end
+		######################################### Labels for display ##########################################
+		@font.draw("HP", 5, 14, 2)
+		@font.draw("FF", 5, 35, 2)
+		@font.draw("$#{@money}", 5, 55, 2)
+		########################################### Health Display ###########################################
+		draw_quad(35, 20, @health_color, 35 + @galaxy_hp, 20, @health_color, 35 + @galaxy_hp, 30, @health_color, 35, 30, @health_color)
+		draw_line(35,20,Gosu::Color::WHITE,135,20,Gosu::Color::WHITE)
+		draw_line(135,20,Gosu::Color::WHITE,135,30,Gosu::Color::WHITE)
+		draw_line(135,30,Gosu::Color::WHITE,35,30,Gosu::Color::WHITE)
+		draw_line(35,30,Gosu::Color::WHITE,35,20,Gosu::Color::WHITE)
+		########################################### Shield Display ###########################################
+		draw_quad(35, 40, @shield_color, 35 + @shield_hp, 40, @shield_color, 35 + @shield_hp, 50, @shield_color, 35, 50, @shield_color)
+		draw_line(35,40,Gosu::Color::WHITE,135,40,Gosu::Color::WHITE)
+		draw_line(135,40,Gosu::Color::WHITE,135,50,Gosu::Color::WHITE)
+		draw_line(135,50,Gosu::Color::WHITE,35,50,Gosu::Color::WHITE)
+		draw_line(35,50,Gosu::Color::WHITE,35,40,Gosu::Color::WHITE)
+	end
+
+	def update_boss_2
+
 	end
 
 	def update_boss_warning
